@@ -1,0 +1,26 @@
+{
+  "default": {
+    "work": [],
+    "end": [
+      "bubble_pop.mp3"
+    ]
+  },
+  "maou": {
+    "work": [
+      "boss.mp3",
+      "castle.mp3",
+      "desert.mp3",
+      "mountain.mp3",
+      "snow.mp3",
+      "maou_game_boss06.mp3",
+      "maou_game_boss07.mp3",
+      "maou_game_boss08.mp3",
+      "maou_game_lastboss03.mp3",
+      "maou_game_lastboss04.mp3",
+      "maou_game_medley02.mp3"
+    ],
+    "end": [
+      "congratulations.mp3"
+    ]
+  }
+}

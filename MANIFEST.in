@@ -1,0 +1,3 @@
+include aibgm/*.py
+include aibgm/*.json
+recursive-include aibgm/assets *.mp3
