@@ -81,7 +81,6 @@ def setup_iflow(settings: dict) -> dict:
         ],
         "Notification": [
             {
-                "matcher": ".*permission.*",
                 "hooks": [
                     {
                         "type": "command",
@@ -147,7 +146,6 @@ def setup_claude(settings: dict) -> dict:
         ],
         "Notification": [
             {
-                "matcher": "permission_prompt",
                 "hooks": [
                     {
                         "type": "command",
