@@ -106,6 +106,44 @@ ai-bgm-select
 
 ### Add Custom Music
 
+#### Method 1: Using config_ext.json (Recommended for copyrighted music)
+
+For copyrighted music that should NOT be committed to the repository:
+
+1. **Create a music directory** in `aibgm/assets/sounds/<your-config>/`
+
+```bash
+mkdir -p aibgm/assets/sounds/my_collection
+cp /path/to/your/song.mp3 aibgm/assets/sounds/my_collection/
+```
+
+2. **Create or edit `aibgm/config_ext.json`** (this file is ignored by git):
+
+```json
+{
+  "my_collection": {
+    "work": ["song1.mp3", "song2.mp3"],
+    "end": ["complete.mp3"]
+  }
+}
+```
+
+3. **Select your config**:
+
+```bash
+ai-bgm-select
+```
+
+**How it works**:
+- `config.json` contains built-in configurations (default, maou)
+- `config_ext.json` contains your custom configurations
+- If a key exists in both files, `config_ext.json` takes precedence
+- `config_ext.json` is gitignored, so your copyrighted music won't be uploaded
+
+#### Method 2: Using config.json (For royalty-free music only)
+
+For royalty-free music that can be shared:
+
 1. **Place audio files** in `aibgm/assets/sounds/<your-config>/`
 
 ```bash
@@ -148,7 +186,11 @@ ai-bgm-select
 
 - Do NOT commit copyrighted music files to this repository
 - Only add music that you have explicit permission to use and distribute
-- Personal music collections should be kept locally and NOT committed
+- **For copyrighted music**: Use `config_ext.json` and custom directories in `assets/sounds/`
+  - These are automatically gitignored and won't be uploaded
+  - Perfect for personal music collections
+  - Example: Create `assets/sounds/my_collection/` and configure it in `config_ext.json`
+- **For royalty-free music**: Add to `config.json` and appropriate directories
 - The `.gitignore` file is configured to ignore all directories except `default` and `maou`
 
 ### Config Structure
@@ -169,7 +211,8 @@ ai-bgm/
 │   ├── ai_bgm_stop.py     # Stop music
 │   ├── ai_bgm_select.py   # Configuration selection
 │   ├── ai_bgm_setup.py    # AI tool integration
-│   ├── config.json        # Music configurations
+│   ├── config.json        # Built-in music configurations
+│   ├── config_ext.json    # Custom music configurations (gitignored)
 │   └── assets/sounds/     # Audio files
 │       ├── default/
 │       └── maou/

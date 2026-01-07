@@ -54,3 +54,6 @@ temp/
 aibgm/assets/sounds/*
 !aibgm/assets/sounds/default/
 !aibgm/assets/sounds/maou/
+
+# User config extension
+config_ext.json

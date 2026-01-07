@@ -75,7 +75,7 @@ def load_selection() -> str:
 
 def load_builtin_config() -> dict:
     """
-    Load the built-in config.json from the package.
+    Load the built-in config.json from the package, merged with config_ext.json if exists.
 
     Returns:
         Dictionary containing all BGM configurations
@@ -88,7 +88,17 @@ def load_builtin_config() -> dict:
         sys.exit(1)
 
     with open(config_file, "r", encoding="utf-8") as f:
-        return json.load(f)
+        config = json.load(f)
+
+    # Load config_ext.json from the same directory if exists
+    config_ext_file = script_dir / "config_ext.json"
+    if config_ext_file.exists():
+        with open(config_ext_file, "r", encoding="utf-8") as f:
+            ext_config = json.load(f)
+            # Merge: ext config overrides built-in config for same keys
+            config.update(ext_config)
+
+    return config
 
 
 def kill_existing_process() -> bool:
