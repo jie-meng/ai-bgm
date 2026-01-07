@@ -9,8 +9,8 @@ from pathlib import Path
 def get_ai_tools():
     """Get supported AI tools."""
     return [
-        ("iflow", "iFlow CLI"),
         ("claude", "Claude Code"),
+        ("iflow", "iFlow CLI"),
     ]
 
 
@@ -18,11 +18,11 @@ def get_settings_path(tool: str) -> Path:
     """Get the settings path for the specified AI tool."""
     home = Path.home()
 
-    if tool == "iflow":
-        return home / ".iflow" / "settings.json"
-
     if tool == "claude":
         return home / ".claude" / "settings.json"
+
+    if tool == "iflow":
+        return home / ".iflow" / "settings.json"
 
     raise ValueError(f"Unknown AI tool: {tool}")
 
@@ -209,14 +209,13 @@ def main():
     settings = load_settings(settings_path)
 
     # Setup integration based on tool type
-    if tool_id == "iflow":
-        settings = setup_iflow(settings)
-    elif tool_id == "claude":
+    if tool_id == "claude":
         settings = setup_claude(settings)
+    elif tool_id == "iflow":
+        settings = setup_iflow(settings)
     else:
         print(f"Error: Unknown tool: {tool_id}")
-        sys.exit(1)
-    # Save updated settings
+        sys.exit(1)    # Save updated settings
     save_settings(settings_path, settings)
 
     print(f"Successfully configured AI BGM for {ai_tools[index][1]}")

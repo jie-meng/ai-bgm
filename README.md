@@ -69,7 +69,7 @@ Interactively choose from available configurations (e.g., `maou`, `default`). Se
 ai-bgm-setup
 ```
 
-Currently supports **iFlow CLI** - music auto-plays when you submit prompts and stops when done.
+Currently supports **Claude Code** and **iFlow CLI** - music auto-plays when you submit prompts and stops when done.
 
 ### Manual Commands
 
