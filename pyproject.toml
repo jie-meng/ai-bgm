@@ -28,14 +28,6 @@ dependencies = [
     "pygame>=2.6.1",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.4.0",
-    "black>=23.0.0",
-    "flake8>=6.0.0",
-    "mypy>=1.5.0",
-]
-
 [project.scripts]
 ai-bgm-play = "aibgm.ai_bgm_play:main"
 ai-bgm-stop = "aibgm.ai_bgm_stop:main"

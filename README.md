@@ -6,9 +6,9 @@ AI CLI Background Music Player - A cross-platform tool that plays work music dur
 
 ```bash
 # 1. Install
-pip install -e .
+pip install .
 
-# 2. Setup AI tool integration (e.g., iFlow CLI)
+# 2. Setup AI tool integration (e.g., Claude Code)
 ai-bgm-setup
 
 # 3. Select your BGM configuration
@@ -27,7 +27,7 @@ ai-bgm-select
 ### Install
 
 ```bash
-pip install -e .
+pip install .
 ```
 
 This installs CLI commands:

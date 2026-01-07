@@ -8,13 +8,13 @@
 git clone <repo-url>
 cd ai-bgm
 
-# Install in editable mode with dev dependencies
-pip install -e ".[dev]"
+# Install in editable mode
+pip install -e .
 ```
 
 ### 2. Code Quality Tools
 
-Installs with `.[dev]`:
+Recommended tools:
 - **Black** - Code formatting
 - **Flake8** - Linting
 - **MyPy** - Type checking
