@@ -145,6 +145,16 @@ if tool_id == "newtool":
     settings = setup_newtool(settings)
 ```
 
+#### iFlow CLI Hooks Configuration
+
+For iFlow CLI, the hooks are configured via the `userpromptsubmit` hook. See the official documentation for details:
+- [iFlow CLI Hooks Documentation](https://platform.iflow.cn/en/cli/examples/hooks#8-userpromptsubmit-hook)
+
+#### Claude Code Hooks Configuration
+
+For Claude Code, hooks are configured in `~/.claude/settings.json` with support for various hook events. See the official documentation for details:
+- [Claude Code Hooks Documentation](https://code.claude.com/docs/en/hooks)
+
 ### Add New Music Configuration
 
 1. Create directory: `aibgm/assets/sounds/<name>/`

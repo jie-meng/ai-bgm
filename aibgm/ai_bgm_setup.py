@@ -10,6 +10,7 @@ def get_ai_tools():
     """Get supported AI tools."""
     return [
         ("iflow", "iFlow CLI"),
+        ("claude", "Claude Code"),
     ]
 
 
@@ -19,6 +20,9 @@ def get_settings_path(tool: str) -> Path:
 
     if tool == "iflow":
         return home / ".iflow" / "settings.json"
+
+    if tool == "claude":
+        return home / ".claude" / "settings.json"
 
     raise ValueError(f"Unknown AI tool: {tool}")
 
@@ -101,6 +105,72 @@ def setup_iflow(settings: dict) -> dict:
     return settings
 
 
+def setup_claude(settings: dict) -> dict:
+    """Setup Claude Code integration.
+
+    Args:
+        settings: The existing settings dictionary.
+
+    Returns:
+        Updated settings dictionary.
+    """
+    hooks_config = {
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "ai-bgm-play work -1",
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "ai-bgm-play end",
+                    }
+                ]
+            }
+        ],
+        "SessionEnd": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "ai-bgm-stop",
+                    }
+                ]
+            }
+        ],
+        "Notification": [
+            {
+                "matcher": "permission_prompt",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "ai-bgm-play notification -1",
+                    }
+                ]
+            }
+        ]
+    }
+
+    # Initialize hooks if it doesn't exist
+    if "hooks" not in settings:
+        settings["hooks"] = {}
+
+    # Update only UserPromptSubmit, Stop, SessionEnd, and Notification, keep other hooks intact
+    settings["hooks"]["UserPromptSubmit"] = hooks_config["UserPromptSubmit"]
+    settings["hooks"]["Stop"] = hooks_config["Stop"]
+    settings["hooks"]["SessionEnd"] = hooks_config["SessionEnd"]
+    settings["hooks"]["Notification"] = hooks_config["Notification"]
+
+    return settings
+
+
 def main():
     """Main function to setup AI BGM integration."""
     ai_tools = get_ai_tools()
@@ -141,10 +211,11 @@ def main():
     # Setup integration based on tool type
     if tool_id == "iflow":
         settings = setup_iflow(settings)
+    elif tool_id == "claude":
+        settings = setup_claude(settings)
     else:
         print(f"Error: Unknown tool: {tool_id}")
         sys.exit(1)
-
     # Save updated settings
     save_settings(settings_path, settings)
 
