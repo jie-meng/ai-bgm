@@ -47,6 +47,7 @@ def setup_iflow(settings: dict) -> dict:
     hooks_config = {
         "UserPromptSubmit": [
             {
+                "matcher": "^[^/]",
                 "hooks": [
                     {
                         "type": "command",
@@ -64,6 +65,27 @@ def setup_iflow(settings: dict) -> dict:
                     }
                 ]
             }
+        ],
+        "SessionEnd": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "ai-bgm-stop",
+                    }
+                ]
+            }
+        ],
+        "Notification": [
+            {
+                "matcher": ".*permission.*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "ai-bgm-play notification -1",
+                    }
+                ]
+            }
         ]
     }
 
@@ -71,9 +93,11 @@ def setup_iflow(settings: dict) -> dict:
     if "hooks" not in settings:
         settings["hooks"] = {}
 
-    # Update only UserPromptSubmit and Stop, keep other hooks intact
+    # Update only UserPromptSubmit, Stop, SessionEnd, and Notification, keep other hooks intact
     settings["hooks"]["UserPromptSubmit"] = hooks_config["UserPromptSubmit"]
     settings["hooks"]["Stop"] = hooks_config["Stop"]
+    settings["hooks"]["SessionEnd"] = hooks_config["SessionEnd"]
+    settings["hooks"]["Notification"] = hooks_config["Notification"]
 
     return settings
 

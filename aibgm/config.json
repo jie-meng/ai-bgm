@@ -3,7 +3,8 @@
     "work": [],
     "end": [
       "bubble_pop.mp3"
-    ]
+    ],
+    "notification": []
   },
   "maou": {
     "work": [
@@ -21,6 +22,9 @@
     ],
     "end": [
       "congratulations.mp3"
+    ],
+    "notification": [
+      "pause.mp3"
     ]
   }
 }

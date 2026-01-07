@@ -30,10 +30,10 @@ def get_assets_path() -> Path:
     try:
         import importlib.resources as resources
         # For Python 3.9+
-        with resources.files("aibgm") as pkg_path:
-            assets_path = pkg_path / "assets" / "sounds"
-            if assets_path.exists():
-                return assets_path
+        pkg_path = resources.files("aibgm")
+        assets_path = pkg_path / "assets" / "sounds"
+        if assets_path.exists():
+            return assets_path
     except (ImportError, AttributeError):
         pass
 
@@ -166,7 +166,7 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
 
     Args:
         selection: The selected configuration name (e.g., 'default', 'maou')
-        music_type: Either 'work' or 'end'
+        music_type: Either 'work', 'end', or 'notification'
         assets_path: Path to the assets/sounds directory
         repeat: Number of times to play. -1 for infinite loop, 0 to skip.
     """
@@ -249,7 +249,7 @@ def start_background_player(music_type: str, count: int) -> None:
     Start the BGM player in the background as a daemon process.
 
     Args:
-        music_type: Either 'work' or 'end'
+        music_type: Either 'work', 'end', or 'notification'
         count: Number of times to play. -1 for infinite loop, 0 to skip.
     """
     # Kill any existing BGM player process first
@@ -311,7 +311,7 @@ def _run_player_daemon(music_type: str, count: int) -> None:
     Run the player daemon (called with --daemon flag).
     
     Args:
-        music_type: Either 'work' or 'end'
+        music_type: Either 'work', 'end', or 'notification'
         count: Number of times to play. -1 for infinite loop, 0 to skip.
     """
     # Redirect standard file descriptors to log file
@@ -371,8 +371,8 @@ def main():
     )
     parser.add_argument(
         "type",
-        choices=["work", "end"],
-        help="Type of music to play: 'work' or 'end'"
+        choices=["work", "end", "notification"],
+        help="Type of music to play: 'work', 'end', or 'notification'"
     )
     parser.add_argument(
         "count",
