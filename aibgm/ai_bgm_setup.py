@@ -47,7 +47,6 @@ def setup_iflow(settings: dict) -> dict:
     hooks_config = {
         "UserPromptSubmit": [
             {
-                "matcher": "^[^/]",
                 "hooks": [
                     {
                         "type": "command",
