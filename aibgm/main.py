@@ -10,6 +10,7 @@ from aibgm.commands.play import play
 from aibgm.commands.stop import stop
 from aibgm.commands.select import select
 from aibgm.commands.setup import setup
+from aibgm.commands.toggle import toggle
 
 
 @click.group()
@@ -23,6 +24,7 @@ cli.add_command(play)
 cli.add_command(stop)
 cli.add_command(select)
 cli.add_command(setup)
+cli.add_command(toggle)
 
 
 if __name__ == "__main__":

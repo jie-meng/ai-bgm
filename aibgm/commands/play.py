@@ -79,6 +79,8 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         assets_path: Path to the assets/sounds directory
         repeat: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: repeat parameter = {repeat}, type = {type(repeat)}")
+    sys.stdout.flush()
     config = load_builtin_config()
 
     if selection not in config:
@@ -122,7 +124,8 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         cleanup_pid()
         sys.exit(1)
 
-    click.echo(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Playing: {selected_file}")
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Playing: {selected_file}")
+    sys.stdout.flush()
 
     # Initialize pygame mixer
     try:
@@ -142,15 +145,25 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         # Play the music
         if repeat == 0:
             # Infinite loop: 0 means loop forever
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Playing with loops=-1 (infinite)")
+            sys.stdout.flush()
             pygame.mixer.music.play(loops=-1)
         else:
             # Play specified number of times (loops parameter is count-1)
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Playing with loops={repeat - 1}")
+            sys.stdout.flush()
             pygame.mixer.music.play(loops=repeat - 1)
 
         # Keep the script running while music plays
+        loop_count = 0
         while pygame.mixer.music.get_busy():
             # Check every 0.1 seconds
             time.sleep(0.1)
+            loop_count += 1
+            # Log every 10 seconds (100 * 0.1s = 10s)
+            if loop_count % 100 == 0:
+                print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Still playing... (loop_count={loop_count})")
+                sys.stdout.flush()
 
     except KeyboardInterrupt:
         click.echo(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Playback stopped by user")
@@ -234,6 +247,10 @@ def run_player_daemon(music_type: str, loop: int) -> None:
         music_type: Either 'work', 'done', or 'notification'
         loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
+    # First, write to stderr before redirection
+    sys.stderr.write(f"[DEBUG] run_player_daemon called with music_type={music_type}, loop={loop}, type(loop)={type(loop)}\n")
+    sys.stderr.flush()
+    
     # Redirect standard file descriptors to log file
     sys.stdout.flush()
     sys.stderr.flush()
@@ -248,6 +265,13 @@ def run_player_daemon(music_type: str, loop: int) -> None:
     os.dup2(log_fd, sys.stdout.fileno())
     os.dup2(log_fd, sys.stderr.fileno())
     os.close(log_fd)
+    
+    # Reopen stdout and stderr with line buffering
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', buffering=1)
+    sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', buffering=1)
+    
+    # Debug: log the parameters
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: run_player_daemon called with music_type={music_type}, loop={loop}, type(loop)={type(loop)}")
 
     # Register cleanup handler
     def signal_handler(signum, frame):
