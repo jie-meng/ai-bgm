@@ -1,21 +1,18 @@
 #!/usr/bin/env python3
 """
-AI BGM Stop Module
-Stops the currently playing music.
+Stop music command for AI BGM.
 """
 
 import os
-import sys
 import signal
+import sys
 import time
+import subprocess
 from pathlib import Path
 
+import click
 
-def get_pid_file() -> Path:
-    """Get the path to the PID file."""
-    config_dir = Path.home() / ".config" / "ai-bgm"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    return config_dir / "bgm_player.pid"
+from aibgm.common import get_pid_file
 
 
 def kill_existing_player() -> bool:
@@ -28,14 +25,13 @@ def kill_existing_player() -> bool:
     killed_any = False
     pid_file = get_pid_file()
 
-    # Kill all processes matching ai_bgm_play.py
+    # Kill all processes matching main.py
     try:
-        # Use pgrep to find all ai_bgm_play.py processes
-        import subprocess
+        # Use pgrep to find all main.py processes
         result = subprocess.run(
-            ["pgrep", "-f", "ai_bgm_play.py"],
+            ["pgrep", "-f", "main.py"],
             capture_output=True,
-            text=True
+            text=True,
         )
 
         if result.returncode == 0 and result.stdout.strip():
@@ -52,9 +48,9 @@ def kill_existing_player() -> bool:
 
             # Force kill any remaining processes
             result = subprocess.run(
-                ["pgrep", "-f", "ai_bgm_play.py"],
+                ["pgrep", "-f", "main.py"],
                 capture_output=True,
-                text=True
+                text=True,
             )
             if result.returncode == 0 and result.stdout.strip():
                 pids = [int(pid) for pid in result.stdout.strip().split("\n")]
@@ -110,38 +106,12 @@ def kill_existing_player() -> bool:
     return killed_any
 
 
-class BGMStopper:
-    """Handles stopping work music and playing end music."""
-
-    def __init__(self):
-        """Initialize the BGM stopper."""
-        # Register signal handler for graceful shutdown
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        signal.signal(signal.SIGINT, self._signal_handler)
-
-    def stop_music(self) -> None:
-        """
-        Stop any playing music.
-        """
-        # Kill any existing BGM player process
-        killed = kill_existing_player()
-        if killed:
-            print("Stopped BGM player")
-        else:
-            print("No BGM player is currently running")
-
-    def _signal_handler(self, signum, frame):
-        """Handle termination signals gracefully."""
-        print("\nReceived termination signal, stopping playback...")
-        sys.exit(0)
-
-
-def main():
-    """Main entry point for the ai-bgm-stop script."""
-    # Create stopper and stop music
-    stopper = BGMStopper()
-    stopper.stop_music()
-
-
-if __name__ == "__main__":
-    main()
+@click.command()
+def stop():
+    """Stop any playing music."""
+    # Kill any existing BGM player process
+    killed = kill_existing_player()
+    if killed:
+        click.echo("Stopped BGM player")
+    else:
+        click.echo("No BGM player is currently running")

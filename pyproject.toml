@@ -26,13 +26,11 @@ classifiers = [
 
 dependencies = [
     "pygame>=2.6.1",
+    "click>=8.3.1",
 ]
 
 [project.scripts]
-ai-bgm-play = "aibgm.ai_bgm_play:main"
-ai-bgm-stop = "aibgm.ai_bgm_stop:main"
-ai-bgm-select = "aibgm.ai_bgm_select:main"
-ai-bgm-setup = "aibgm.ai_bgm_setup:main"
+ai-bgm = "aibgm.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]

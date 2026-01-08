@@ -30,10 +30,7 @@ AI agent guidelines for working on the AI BGM project.
 | Path | Purpose |
 |------|---------|
 | `aibgm/config.json` | BGM configurations |
-| `aibgm/ai_bgm_play.py` | Playback logic |
-| `aibgm/ai_bgm_stop.py` | Kill player process |
-| `aibgm/ai_bgm_select.py` | User selection |
-| `aibgm/ai_bgm_setup.py` | AI tool hooks |
+| `aibgm/main.py` | Unified CLI entry point |
 
 ### Daemon Behavior
 
@@ -54,22 +51,25 @@ AI agent guidelines for working on the AI BGM project.
     "end": ["end.mp3"]
   }
 }
-# 3. Test: ai-bgm-select
+# 3. Test: ai-bgm select
 ```
 
 ### Add CLI Option
 
-In `ai_bgm_play.py` `main()`:
+In `main.py`, use Click decorators:
 ```python
-parser.add_argument("--option", action="store_true")
-# Use: args.option
+@cli.command()
+@click.option("--option", is_flag=True)
+def my_command(option):
+    # Use: option
+    pass
 ```
 
 ### Add AI Tool
 
-1. Add to `get_ai_tools()` in `ai_bgm_setup.py`
+1. Add to `get_ai_tools()` in `main.py`
 2. Implement setup function
-3. Call in `main()`
+3. Call in `setup()` command
 
 ## Testing
 
@@ -84,9 +84,9 @@ flake8 aibgm/
 mypy aibgm/
 
 # Manual test
-ai-bgm-play work -1
-ai-bgm-stop
-ai-bgm-select
+ai-bgm play work -1
+ai-bgm stop
+ai-bgm select
 ```
 
 ## Constraints

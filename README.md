@@ -9,10 +9,10 @@ AI CLI Background Music Player - A cross-platform tool that plays work music dur
 pip install .
 
 # 2. Setup AI tool integration (e.g., Claude Code)
-ai-bgm-setup
+ai-bgm setup
 
 # 3. Select your BGM configuration
-ai-bgm-select
+ai-bgm select
 
 # 4. Done! Music will auto-play when AI is working
 ```
@@ -30,11 +30,8 @@ ai-bgm-select
 pip install .
 ```
 
-This installs CLI commands:
-- `ai-bgm-play` - Play music
-- `ai-bgm-stop` - Stop music
-- `ai-bgm-select` - Select configuration
-- `ai-bgm-setup` - Setup AI tool integration
+This installs CLI command:
+- `ai-bgm` - Unified CLI with subcommands: play, stop, select, setup
 
 ### System Dependencies
 
@@ -58,7 +55,7 @@ sudo dnf install python3-devel SDL2-devel
 #### 1. Select BGM Configuration
 
 ```bash
-ai-bgm-select
+ai-bgm select
 ```
 
 Interactively choose from available configurations (e.g., `maou`, `default`). Selection is saved to `~/.config/ai-bgm/selection.json`.
@@ -66,7 +63,7 @@ Interactively choose from available configurations (e.g., `maou`, `default`). Se
 #### 2. Setup AI Tool Integration
 
 ```bash
-ai-bgm-setup
+ai-bgm setup
 ```
 
 Currently supports **Claude Code** and **iFlow CLI** - music auto-plays when you submit prompts and stops when done.
@@ -76,15 +73,15 @@ Currently supports **Claude Code** and **iFlow CLI** - music auto-plays when you
 #### Play Work Music
 
 ```bash
-ai-bgm-play work -1    # Loop indefinitely
-ai-bgm-play work 3     # Play 3 times
-ai-bgm-play end        # Play end music once
+ai-bgm play work -1    # Loop indefinitely
+ai-bgm play work 3     # Play 3 times
+ai-bgm play end        # Play end music once
 ```
 
 #### Stop Music
 
 ```bash
-ai-bgm-stop
+ai-bgm stop
 ```
 
 Stops any playing music.
@@ -93,13 +90,13 @@ Stops any playing music.
 
 ```bash
 # Test play (single end music)
-ai-bgm-play end
+ai-bgm play end
 
 # Test work music loop (Ctrl+C to stop)
-ai-bgm-play work -1
+ai-bgm play work -1
 
 # Verify configuration
-ai-bgm-select
+ai-bgm select
 ```
 
 ## Custom Configuration
@@ -165,7 +162,7 @@ cp /path/to/your/song.mp3 aibgm/assets/sounds/my_music/
 3. **Select your config**:
 
 ```bash
-ai-bgm-select
+ai-bgm select
 ```
 
 ### Music Licensing
@@ -193,6 +190,12 @@ ai-bgm-select
 - **For royalty-free music**: Add to `config.json` and appropriate directories
 - The `.gitignore` file is configured to ignore all directories except `default` and `maou`
 
+3. **Select your config**:
+
+```bash
+ai-bgm select
+```
+
 ### Config Structure
 
 | Field | Description |
@@ -207,10 +210,7 @@ ai-bgm-select
 ```
 ai-bgm/
 ├── aibgm/
-│   ├── ai_bgm_play.py     # Music playback
-│   ├── ai_bgm_stop.py     # Stop music
-│   ├── ai_bgm_select.py   # Configuration selection
-│   ├── ai_bgm_setup.py    # AI tool integration
+│   ├── main.py            # Unified CLI entry point
 │   ├── config.json        # Built-in music configurations
 │   ├── config_ext.json    # Custom music configurations (gitignored)
 │   └── assets/sounds/     # Audio files

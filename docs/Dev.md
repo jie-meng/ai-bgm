@@ -43,15 +43,13 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                      CLI Layer                          │
-│  ai-bgm-play / ai-bgm-stop / ai-bgm-select / ai-bgm-setup │
+│           ai-bgm (play/stop/select/setup)               │
 └─────────────────────────────────────────────────────────┘
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────┐
-│                     Core Modules                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│  │ai_bgm_play.py│  │ai_bgm_stop.py│  │ai_bgm_select.py│ │
-│  └──────────────┘  └──────────────┘  └──────────────┘   │
+│                     Core Module                         │
+│                    main.py (Click)                      │
 └─────────────────────────────────────────────────────────┘
                           │
                           ▼
@@ -71,10 +69,7 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
 
 | Module | Responsibility |
 |--------|----------------|
-| `ai_bgm_play.py` | Music playback, daemon mode, PID management |
-| `ai_bgm_stop.py` | Kill playing process |
-| `ai_bgm_select.py` | Interactive configuration selection |
-| `ai_bgm_setup.py` | AI tool hooks integration |
+| `main.py` | Unified CLI with subcommands for play/stop/select/setup |
 
 ### Configuration System
 
@@ -97,19 +92,20 @@ Location: `~/.config/ai-bgm/`
 
 ### Key Design Patterns
 
-1. **Daemon Mode**: Player runs detached with PID tracking at `~/.config/ai-bgm/bgm_player.pid`
-2. **Log Output**: Daemon logs to `~/.config/ai-bgm/bgm_player.log`
-3. **Signal Handling**: Graceful shutdown on SIGTERM/SIGINT
-4. **Cross-Platform**: Uses `platform.system()` for Windows/Unix differences
+1. **Click CLI**: Uses Click 8.3.1 for unified command structure
+2. **Daemon Mode**: Player runs detached with PID tracking at `~/.config/ai-bgm/bgm_player.pid`
+3. **Log Output**: Daemon logs to `~/.config/ai-bgm/bgm_player.log`
+4. **Signal Handling**: Graceful shutdown on SIGTERM/SIGINT
+5. **Cross-Platform**: Uses `platform.system()` for Windows/Unix differences
 
 ### Dependency Graph
 
 ```
 pygame>=2.6.1
+click>=8.3.1
 ```
 
 Python stdlib:
-- `argparse` - CLI
 - `pathlib` - Path handling
 - `signal` - Process signals
 - `subprocess` - Daemon spawning
@@ -119,7 +115,7 @@ Python stdlib:
 
 ### Add New AI Tool Integration
 
-1. Update `get_ai_tools()` in `ai_bgm_setup.py`:
+1. Update `get_ai_tools()` in `main.py`:
 
 ```python
 def get_ai_tools():
@@ -138,7 +134,7 @@ def setup_newtool(settings: dict) -> dict:
     return settings
 ```
 
-3. Call in `main()`:
+3. Call in `setup()` command:
 
 ```python
 if tool_id == "newtool":
@@ -163,22 +159,25 @@ For iFlow CLI, the hooks are configured via the `userpromptsubmit` hook. See the
 
 ### Add CLI Option
 
-In `ai_bgm_play.py` `main()`:
+In `main.py`, use Click decorators:
 
 ```python
-parser.add_argument("--new-option", action="store_true")
-# Then use: args.new_option
+@cli.command()
+@click.option("--new-option", is_flag=True)
+def my_command(new_option):
+    # Use: new_option
+    pass
 ```
 
 ## Testing
 
 ### Manual Testing Checklist
 
-- [ ] `ai-bgm-play work -1` loops correctly
-- [ ] `ai-bgm-play end` plays once
-- [ ] `ai-bgm-stop` kills player
-- [ ] `ai-bgm-select` updates selection
-- [ ] `ai-bgm-setup` creates valid hooks
+- [ ] `ai-bgm play work -1` loops correctly
+- [ ] `ai-bgm play end` plays once
+- [ ] `ai-bgm stop` kills player
+- [ ] `ai-bgm select` updates selection
+- [ ] `ai-bgm setup` creates valid hooks
 - [ ] New config appears in selection
 - [ ] Audio files play without error
 
@@ -186,7 +185,7 @@ parser.add_argument("--new-option", action="store_true")
 
 ```bash
 # Check daemon status
-ps aux | grep ai-bgm
+ps aux | grep "ai-bgm"
 
 # View logs
 tail -f ~/.config/ai-bgm/bgm_player.log
@@ -196,6 +195,9 @@ cat ~/.config/ai-bgm/bgm_player.pid
 
 # Test pygame directly
 python -c "import pygame; pygame.mixer.init(); print('OK')"
+
+# Test click
+python -c "import click; print('OK')"
 ```
 
 ## Distribution

@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Setup AI BGM integration with AI tools."""
+"""
+Setup AI tool integration command for AI BGM.
+"""
 
 import json
 import sys
 from pathlib import Path
 
+import click
 
-def get_ai_tools():
+
+def get_ai_tools() -> list:
     """Get supported AI tools."""
     return [
         ("claude", "Claude Code"),
@@ -54,7 +58,7 @@ def setup_iflow(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-play work -1",
+                        "command": "ai-bgm play work -1",
                     }
                 ]
             }
@@ -64,7 +68,7 @@ def setup_iflow(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-play end",
+                        "command": "ai-bgm play end",
                     }
                 ]
             }
@@ -74,7 +78,7 @@ def setup_iflow(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-stop",
+                        "command": "ai-bgm stop",
                     }
                 ]
             }
@@ -84,11 +88,11 @@ def setup_iflow(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-play notification -1",
+                        "command": "ai-bgm play notification -1",
                     }
                 ]
             }
-        ]
+        ],
     }
 
     # Initialize hooks if it doesn't exist
@@ -119,7 +123,7 @@ def setup_claude(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-play work -1",
+                        "command": "ai-bgm play work -1",
                     }
                 ]
             }
@@ -129,7 +133,7 @@ def setup_claude(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-play end",
+                        "command": "ai-bgm play end",
                     }
                 ]
             }
@@ -139,7 +143,7 @@ def setup_claude(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-stop",
+                        "command": "ai-bgm stop",
                     }
                 ]
             }
@@ -149,11 +153,11 @@ def setup_claude(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm-play notification -1",
+                        "command": "ai-bgm play notification -1",
                     }
                 ]
             }
-        ]
+        ],
     }
 
     # Initialize hooks if it doesn't exist
@@ -169,38 +173,42 @@ def setup_claude(settings: dict) -> dict:
     return settings
 
 
-def main():
-    """Main function to setup AI BGM integration."""
+@click.command()
+def setup():
+    """Setup AI BGM integration with AI tools."""
     ai_tools = get_ai_tools()
 
-    print("Select AI tool:")
+    click.echo("Select AI tool:")
     for i, (tool_id, tool_name) in enumerate(ai_tools, 1):
-        print(f"{i}. {tool_name}")
+        click.echo(f"{i}. {tool_name}")
 
     try:
-        user_input = input("Enter option: ").strip()
+        user_input = click.prompt("Enter option", type=str).strip()
         if not user_input:
-            print("Cancelled")
+            click.echo("Cancelled")
             sys.exit(0)
 
         index = int(user_input) - 1
         if 0 <= index < len(ai_tools):
             tool_id = ai_tools[index][0]
         else:
-            print(f"Error: Invalid option, please enter 1-{len(ai_tools)}")
+            click.echo(
+                f"Error: Invalid option, please enter 1-{len(ai_tools)}",
+                err=True,
+            )
             sys.exit(1)
     except ValueError:
-        print("Error: Please enter a valid number")
+        click.echo("Error: Please enter a valid number", err=True)
         sys.exit(1)
     except KeyboardInterrupt:
-        print("\nCancelled")
+        click.echo("\nCancelled")
         sys.exit(0)
 
     # Get settings path
     settings_path = get_settings_path(tool_id)
 
     if not settings_path.exists():
-        print(f"Error: Settings file not found at {settings_path}")
+        click.echo(f"Error: Settings file not found at {settings_path}", err=True)
         sys.exit(1)
 
     # Load existing settings
@@ -212,13 +220,11 @@ def main():
     elif tool_id == "iflow":
         settings = setup_iflow(settings)
     else:
-        print(f"Error: Unknown tool: {tool_id}")
-        sys.exit(1)    # Save updated settings
+        click.echo(f"Error: Unknown tool: {tool_id}", err=True)
+        sys.exit(1)
+
+    # Save updated settings
     save_settings(settings_path, settings)
 
-    print(f"Successfully configured AI BGM for {ai_tools[index][1]}")
-    print(f"Settings saved to: {settings_path}")
-
-
-if __name__ == "__main__":
-    main()
+    click.echo(f"Successfully configured AI BGM for {ai_tools[index][1]}")
+    click.echo(f"Settings saved to: {settings_path}")
