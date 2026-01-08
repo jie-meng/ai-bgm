@@ -58,7 +58,7 @@ def setup_iflow(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm play work -1",
+                        "command": "ai-bgm play work 0",
                     }
                 ]
             }
@@ -88,7 +88,7 @@ def setup_iflow(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm play notification -1",
+                        "command": "ai-bgm play notification 0",
                     }
                 ]
             }
@@ -123,7 +123,7 @@ def setup_claude(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm play work -1",
+                        "command": "ai-bgm play work 0",
                     }
                 ]
             }
@@ -153,7 +153,7 @@ def setup_claude(settings: dict) -> dict:
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "ai-bgm play notification -1",
+                        "command": "ai-bgm play notification 0",
                     }
                 ]
             }

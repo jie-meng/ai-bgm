@@ -77,7 +77,7 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         selection: The selected configuration name (e.g., 'default', 'maou')
         music_type: Either 'work', 'end', or 'notification'
         assets_path: Path to the assets/sounds directory
-        repeat: Number of times to play. -1 for infinite loop, 0 to skip.
+        repeat: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
     config = load_builtin_config()
 
@@ -101,11 +101,6 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
 
     if not files:
         # No files configured, do nothing
-        cleanup_pid()
-        return
-
-    if repeat == 0:
-        # Skip playback
         cleanup_pid()
         return
 
@@ -145,8 +140,8 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         pygame.mixer.music.load(str(full_path))
 
         # Play the music
-        if repeat == -1:
-            # Infinite loop: -1 means loop forever in pygame
+        if repeat == 0:
+            # Infinite loop: 0 means loop forever
             pygame.mixer.music.play(loops=-1)
         else:
             # Play specified number of times (loops parameter is count-1)
@@ -171,13 +166,13 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         cleanup_pid()
 
 
-def start_background_player(music_type: str, count: int) -> None:
+def start_background_player(music_type: str, loop: int) -> None:
     """
     Start the BGM player in the background as a daemon process.
 
     Args:
         music_type: Either 'work', 'end', or 'notification'
-        count: Number of times to play. -1 for infinite loop, 0 to skip.
+        loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
     # Kill any existing BGM player process first
     killed = kill_existing_process()
@@ -190,7 +185,7 @@ def start_background_player(music_type: str, count: int) -> None:
     script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "main.py"))
 
     # Prepare arguments for the background process
-    args = [python_exe, script_path, "play", "--daemon", music_type, str(count)]
+    args = [python_exe, script_path, "play", "--daemon", music_type, str(loop)]
 
     # Start the background process
     if platform.system() == "Windows":
@@ -233,13 +228,13 @@ def start_background_player(music_type: str, count: int) -> None:
             pass
 
 
-def run_player_daemon(music_type: str, count: int) -> None:
+def run_player_daemon(music_type: str, loop: int) -> None:
     """
     Run the player daemon (called with --daemon flag).
 
     Args:
         music_type: Either 'work', 'end', or 'notification'
-        count: Number of times to play. -1 for infinite loop, 0 to skip.
+        loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
     # Redirect standard file descriptors to log file
     sys.stdout.flush()
@@ -281,22 +276,22 @@ def run_player_daemon(music_type: str, count: int) -> None:
         sys.exit(1)
 
     # Play the music
-    play_music(selection, music_type, assets_path, count)
+    play_music(selection, music_type, assets_path, loop)
 
 
 @click.command()
 @click.argument("music_type", type=click.Choice(["work", "end", "notification"]))
-@click.argument("count", type=int, default=1, required=False)
+@click.argument("loop", type=int, default=1, required=False)
 @click.option("--daemon", is_flag=True, hidden=True, help="Run as daemon process (internal use only)")
-def play(music_type: str, count: int, daemon: bool):
+def play(music_type: str, loop: int, daemon: bool):
     """Play music based on saved configuration.
 
     MUSIC_TYPE: Type of music to play: 'work', 'end', or 'notification'
-    COUNT: Number of times to play. -1 for infinite loop, 0 to skip. (default: 1)
+    LOOP: Number of times to play. 0 for infinite loop, 1+ for specified count. (default: 1)
     """
     if daemon:
         # Running as daemon
-        run_player_daemon(music_type, count)
+        run_player_daemon(music_type, loop)
     else:
         # Start the player in background
-        start_background_player(music_type, count)
+        start_background_player(music_type, loop)
