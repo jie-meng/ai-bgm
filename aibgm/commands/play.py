@@ -75,7 +75,7 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
 
     Args:
         selection: The selected configuration name (e.g., 'default', 'maou')
-        music_type: Either 'work', 'end', or 'notification'
+        music_type: Either 'work', 'done', or 'notification'
         assets_path: Path to the assets/sounds directory
         repeat: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
@@ -171,7 +171,7 @@ def start_background_player(music_type: str, loop: int) -> None:
     Start the BGM player in the background as a daemon process.
 
     Args:
-        music_type: Either 'work', 'end', or 'notification'
+        music_type: Either 'work', 'done', or 'notification'
         loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
     # Kill any existing BGM player process first
@@ -181,11 +181,9 @@ def start_background_player(music_type: str, loop: int) -> None:
     # Get the Python executable
     python_exe = sys.executable
 
-    # Get the current script path (main.py)
-    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "main.py"))
-
-    # Prepare arguments for the background process
-    args = [python_exe, script_path, "play", "--daemon", music_type, str(loop)]
+    # Use the ai-bgm command directly (which is installed as a script entry point)
+    # This works both in development and after pip install
+    args = ["ai-bgm", "play", "--daemon", music_type, str(loop)]
 
     # Start the background process
     if platform.system() == "Windows":
@@ -233,7 +231,7 @@ def run_player_daemon(music_type: str, loop: int) -> None:
     Run the player daemon (called with --daemon flag).
 
     Args:
-        music_type: Either 'work', 'end', or 'notification'
+        music_type: Either 'work', 'done', or 'notification'
         loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
     # Redirect standard file descriptors to log file
@@ -280,13 +278,13 @@ def run_player_daemon(music_type: str, loop: int) -> None:
 
 
 @click.command()
-@click.argument("music_type", type=click.Choice(["work", "end", "notification"]))
+@click.argument("music_type", type=click.Choice(["work", "done", "notification"]))
 @click.argument("loop", type=int, default=1, required=False)
 @click.option("--daemon", is_flag=True, hidden=True, help="Run as daemon process (internal use only)")
 def play(music_type: str, loop: int, daemon: bool):
     """Play music based on saved configuration.
 
-    MUSIC_TYPE: Type of music to play: 'work', 'end', or 'notification'
+    MUSIC_TYPE: Type of music to play: 'work', 'done', or 'notification'
     LOOP: Number of times to play. 0 for infinite loop, 1+ for specified count. (default: 1)
     """
     if daemon:

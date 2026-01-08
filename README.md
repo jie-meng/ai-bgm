@@ -73,9 +73,9 @@ Currently supports **Claude Code** and **iFlow CLI** - music auto-plays when you
 #### Play Work Music
 
 ```bash
-ai-bgm play work -1    # Loop indefinitely
+ai-bgm play work 0     # Loop indefinitely
 ai-bgm play work 3     # Play 3 times
-ai-bgm play end        # Play end music once
+ai-bgm play done       # Play done music once
 ```
 
 #### Stop Music
@@ -89,11 +89,11 @@ Stops any playing music.
 ### Test BGM
 
 ```bash
-# Test play (single end music)
-ai-bgm play end
+# Test play (single done music)
+ai-bgm play done
 
 # Test work music loop (Ctrl+C to stop)
-ai-bgm play work -1
+ai-bgm play work 0
 
 # Verify configuration
 ai-bgm select
@@ -120,7 +120,7 @@ cp /path/to/your/song.mp3 aibgm/assets/sounds/my_collection/
 {
   "my_collection": {
     "work": ["song1.mp3", "song2.mp3"],
-    "end": ["complete.mp3"]
+    "done": ["complete.mp3"]
   }
 }
 ```
@@ -154,7 +154,7 @@ cp /path/to/your/song.mp3 aibgm/assets/sounds/my_music/
 {
   "my_music": {
     "work": ["song1.mp3", "song2.mp3"],
-    "end": ["complete.mp3"]
+    "done": ["complete.mp3"]
   }
 }
 ```
@@ -201,7 +201,7 @@ ai-bgm select
 | Field | Description |
 |-------|-------------|
 | `work` | List of music files to play during work |
-| `end` | List of music files to play when done |
+| `done` | List of music files to play when done |
 
 **Note**: File paths are relative to `aibgm/assets/sounds/<config-name>/`
 

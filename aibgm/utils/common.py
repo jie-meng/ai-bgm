@@ -80,8 +80,22 @@ def load_builtin_config() -> dict:
     Returns:
         Dictionary containing all BGM configurations
     """
-    script_dir = Path(__file__).parent
-    config_file = script_dir / "config.json"
+    # Try to get the package installation directory first
+    config_file = None
+    try:
+        import importlib.resources as resources
+        # For Python 3.9+
+        pkg_path = resources.files("aibgm")
+        config_file = pkg_path / "config.json"
+        if not config_file.exists():
+            config_file = None
+    except (ImportError, AttributeError):
+        pass
+
+    # Fallback: use the parent directory of this script (aibgm/)
+    if config_file is None:
+        script_dir = Path(__file__).parent.parent  # Go up from utils/ to aibgm/
+        config_file = script_dir / "config.json"
 
     if not config_file.exists():
         print(f"Error: Config file not found at {config_file}")
@@ -91,7 +105,7 @@ def load_builtin_config() -> dict:
         config = json.load(f)
 
     # Load config_ext.json from the same directory if exists
-    config_ext_file = script_dir / "config_ext.json"
+    config_ext_file = config_file.parent / "config_ext.json"
     if config_ext_file.exists():
         with open(config_ext_file, "r", encoding="utf-8") as f:
             ext_config = json.load(f)

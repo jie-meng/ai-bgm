@@ -6,15 +6,15 @@ A unified CLI tool for playing background music during AI-assisted work sessions
 
 import click
 
-from aibgm.play import play
-from aibgm.stop import stop
-from aibgm.select import select
-from aibgm.setup import setup
+from aibgm.commands.play import play
+from aibgm.commands.stop import stop
+from aibgm.commands.select import select
+from aibgm.commands.setup import setup
 
 
 @click.group()
 def cli():
-    """AI CLI Background Music Player - Plays work music in loop and end music when done."""
+    """AI CLI Background Music Player - Plays work music in loop and done music when finished."""
     pass
 
 

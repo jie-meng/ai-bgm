@@ -25,11 +25,11 @@ def kill_existing_player() -> bool:
     killed_any = False
     pid_file = get_pid_file()
 
-    # Kill all processes matching main.py
+    # Kill all processes matching ai-bgm play --daemon
     try:
-        # Use pgrep to find all main.py processes
+        # Use pgrep to find all ai-bgm daemon processes
         result = subprocess.run(
-            ["pgrep", "-f", "main.py"],
+            ["pgrep", "-f", "ai-bgm play --daemon"],
             capture_output=True,
             text=True,
         )
@@ -48,7 +48,7 @@ def kill_existing_player() -> bool:
 
             # Force kill any remaining processes
             result = subprocess.run(
-                ["pgrep", "-f", "main.py"],
+                ["pgrep", "-f", "ai-bgm play --daemon"],
                 capture_output=True,
                 text=True,
             )

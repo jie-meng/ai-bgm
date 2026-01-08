@@ -48,7 +48,7 @@ AI agent guidelines for working on the AI BGM project.
 {
   "<name>": {
     "work": ["file.mp3"],
-    "end": ["end.mp3"]
+    "done": ["done.mp3"]
   }
 }
 # 3. Test: ai-bgm select
@@ -84,7 +84,7 @@ flake8 aibgm/
 mypy aibgm/
 
 # Manual test
-ai-bgm play work -1
+ai-bgm play work 0
 ai-bgm stop
 ai-bgm select
 ```

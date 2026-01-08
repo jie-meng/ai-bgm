@@ -1,7 +1,7 @@
 {
   "default": {
     "work": [],
-    "end": [
+    "done": [
       "bubble_pop.mp3"
     ],
     "notification": []
@@ -20,7 +20,7 @@
       "maou_game_lastboss04.mp3",
       "maou_game_medley02.mp3"
     ],
-    "end": [
+    "done": [
       "congratulations.mp3"
     ],
     "notification": [

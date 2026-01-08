@@ -173,8 +173,8 @@ def my_command(new_option):
 
 ### Manual Testing Checklist
 
-- [ ] `ai-bgm play work -1` loops correctly
-- [ ] `ai-bgm play end` plays once
+- [ ] `ai-bgm play work 0` loops correctly
+- [ ] `ai-bgm play done` plays once
 - [ ] `ai-bgm stop` kills player
 - [ ] `ai-bgm select` updates selection
 - [ ] `ai-bgm setup` creates valid hooks
