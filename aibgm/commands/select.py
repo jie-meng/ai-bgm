@@ -10,7 +10,7 @@ from typing import Optional
 
 import click
 
-from aibgm.common import get_selection_file, load_builtin_config
+from aibgm.utils.common import get_selection_file, load_builtin_config
 
 
 def load_current_selection() -> Optional[str]:

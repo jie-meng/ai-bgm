@@ -15,7 +15,7 @@ from pathlib import Path
 import click
 import pygame
 
-from aibgm.common import (
+from aibgm.utils.common import (
     get_assets_path,
     get_pid_file,
     load_selection,

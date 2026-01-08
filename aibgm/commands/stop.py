@@ -12,7 +12,7 @@ from pathlib import Path
 
 import click
 
-from aibgm.common import get_pid_file
+from aibgm.utils.common import get_pid_file
 
 
 def kill_existing_player() -> bool:
