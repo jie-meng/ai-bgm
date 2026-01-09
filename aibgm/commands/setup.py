@@ -61,13 +61,28 @@ def setup():
 
     # Get settings path
     settings_path = selected_integration.get_settings_path()
+    tool_id, tool_name = selected_integration.get_tool_info()
 
-    if not settings_path.exists():
-        click.echo(f"Error: Settings file not found at {settings_path}", err=True)
+    # Check if the parent directory exists (e.g., ~/.cursor, ~/.gemini)
+    config_dir = settings_path.parent
+    if not config_dir.exists():
+        click.echo(
+            f"Error: Configuration directory not found at {config_dir}",
+            err=True,
+        )
+        click.echo(
+            f"Please install and run {tool_name} first to create the configuration directory.",
+            err=True,
+        )
         sys.exit(1)
 
-    # Load existing settings
-    settings = load_settings(settings_path)
+    # Load existing settings or create new if file doesn't exist
+    if settings_path.exists():
+        click.echo(f"Found existing configuration at {settings_path}")
+        settings = load_settings(settings_path)
+    else:
+        click.echo(f"Creating new configuration file at {settings_path}")
+        settings = {}
 
     # Setup integration
     settings = selected_integration.setup_hooks(settings)
@@ -75,6 +90,8 @@ def setup():
     # Save updated settings
     save_settings(settings_path, settings)
 
-    tool_id, tool_name = selected_integration.get_tool_info()
-    click.echo(f"Successfully configured AI BGM for {tool_name}")
-    click.echo(f"Settings saved to: {settings_path}")
+    click.echo()
+    click.echo(f"✓ Successfully configured AI BGM for {tool_name}")
+    click.echo(f"✓ Settings saved to: {settings_path}")
+    click.echo()
+    click.echo(f"Now when you use {tool_name}, AI BGM will automatically play!")

@@ -7,6 +7,8 @@ This directory contains integration modules for various AI CLI tools.
 - `__init__.py` - Base `AIToolIntegration` abstract class
 - `registry.py` - Integration registry that manages all integrations
 - `claude.py` - Claude Code integration
+- `cursor_agent.py` - Cursor Agent integration
+- `gemini.py` - Gemini CLI integration
 - `iflow.py` - iFlow CLI integration
 
 ## Adding a New Integration
@@ -89,5 +91,7 @@ ai-bgm setup
 
 ## Available Integrations
 
-- **Claude Code**: Hooks for AI-assisted coding with Claude
-- **iFlow CLI**: Hooks for iFlow AI CLI tool
+- **Claude Code**: [Hooks Documentation](https://code.claude.com/docs/en/hooks)
+- **Cursor Agent**: [Hooks Documentation](https://cursor.com/cn/docs/agent/hooks)
+- **Gemini CLI**: [Hooks Documentation](https://geminicli.com/docs/hooks/)
+- **iFlow CLI**: [Hooks Documentation](https://platform.iflow.cn/en/cli/examples/hooks#8-userpromptsubmit-hook)

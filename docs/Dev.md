@@ -212,6 +212,8 @@ aibgm/commands/integrations/
 ├── __init__.py           # Base AIToolIntegration class
 ├── registry.py           # Integration registry
 ├── claude.py             # Claude Code integration
+├── cursor_agent.py       # Cursor Agent integration
+├── gemini.py             # Gemini CLI integration
 ├── iflow.py              # iFlow CLI integration
 └── <newtool>.py          # Your new integration
 ```
@@ -222,15 +224,14 @@ aibgm/commands/integrations/
 - Registry automatically discovers and provides all integrations
 - Easy to add, remove, or modify integrations without affecting others
 
-#### Claude Code Hooks Configuration
+#### Supported AI Tools Hooks Documentation
 
-For Claude Code, hooks are configured in `~/.claude/settings.json` with support for various hook events. See the official documentation for details:
-- [Claude Code Hooks Documentation](https://code.claude.com/docs/en/hooks)
+AI BGM supports the following AI CLI tools with hooks:
 
-#### iFlow CLI Hooks Configuration
-
-For iFlow CLI, the hooks are configured via the `userpromptsubmit` hook. See the official documentation for details:
-- [iFlow CLI Hooks Documentation](https://platform.iflow.cn/en/cli/examples/hooks#8-userpromptsubmit-hook)
+- **Claude Code**: [Hooks Documentation](https://code.claude.com/docs/en/hooks)
+- **Cursor Agent**: [Hooks Documentation](https://cursor.com/cn/docs/agent/hooks)
+- **Gemini CLI**: [Hooks Documentation](https://geminicli.com/docs/hooks/)
+- **iFlow CLI**: [Hooks Documentation](https://platform.iflow.cn/en/cli/examples/hooks#8-userpromptsubmit-hook)
 
 ### Add New Music Configuration
 

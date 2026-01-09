@@ -7,6 +7,8 @@ from typing import List, Type
 
 from aibgm.commands.integrations import AIToolIntegration
 from aibgm.commands.integrations.claude import ClaudeIntegration
+from aibgm.commands.integrations.cursor_agent import CursorAgentIntegration
+from aibgm.commands.integrations.gemini import GeminiIntegration
 from aibgm.commands.integrations.iflow import IFlowIntegration
 
 
@@ -23,6 +25,8 @@ class IntegrationRegistry:
     # Register all available integrations here
     _integrations: List[Type[AIToolIntegration]] = [
         ClaudeIntegration,
+        CursorAgentIntegration,
+        GeminiIntegration,
         IFlowIntegration,
     ]
 
