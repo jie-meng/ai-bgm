@@ -1,0 +1,93 @@
+# AI Tool Integrations
+
+This directory contains integration modules for various AI CLI tools.
+
+## Structure
+
+- `__init__.py` - Base `AIToolIntegration` abstract class
+- `registry.py` - Integration registry that manages all integrations
+- `claude.py` - Claude Code integration
+- `iflow.py` - iFlow CLI integration
+
+## Adding a New Integration
+
+### Step 1: Create Integration File
+
+Create a new file `<toolname>.py`:
+
+```python
+#!/usr/bin/env python3
+"""
+New Tool integration for AI BGM.
+"""
+
+from pathlib import Path
+from typing import Tuple
+
+from aibgm.commands.integrations import AIToolIntegration
+
+
+class NewToolIntegration(AIToolIntegration):
+    """Integration for New Tool."""
+
+    def get_tool_info(self) -> Tuple[str, str]:
+        """Get tool information."""
+        return ("newtool", "New Tool Name")
+
+    def get_settings_path(self) -> Path:
+        """Get settings path."""
+        return Path.home() / ".newtool" / "settings.json"
+
+    def setup_hooks(self, settings: dict) -> dict:
+        """Setup hooks for New Tool."""
+        hooks_config = {
+            "UserPromptSubmit": [
+                {"hooks": [{"type": "command", "command": "ai-bgm play work 0"}]}
+            ],
+            "Stop": [{"hooks": [{"type": "command", "command": "ai-bgm play done"}]}],
+            "SessionEnd": [{"hooks": [{"type": "command", "command": "ai-bgm stop"}]}],
+        }
+
+        if "hooks" not in settings:
+            settings["hooks"] = {}
+
+        settings["hooks"]["UserPromptSubmit"] = hooks_config["UserPromptSubmit"]
+        settings["hooks"]["Stop"] = hooks_config["Stop"]
+        settings["hooks"]["SessionEnd"] = hooks_config["SessionEnd"]
+
+        return settings
+```
+
+### Step 2: Register Integration
+
+Add your integration to `registry.py`:
+
+```python
+from aibgm.commands.integrations.newtool import NewToolIntegration
+
+class IntegrationRegistry:
+    _integrations: List[Type[AIToolIntegration]] = [
+        ClaudeIntegration,
+        IFlowIntegration,
+        NewToolIntegration,  # Add here
+    ]
+```
+
+### Step 3: Test
+
+```bash
+ai-bgm setup
+# Your new tool should appear in the menu
+```
+
+## Design Principles
+
+1. **Isolation**: Each integration is self-contained in its own file
+2. **Interface**: All integrations implement the same `AIToolIntegration` interface
+3. **Registry**: Central registry automatically discovers all integrations
+4. **Extensibility**: Easy to add new integrations without modifying existing code
+
+## Available Integrations
+
+- **Claude Code**: Hooks for AI-assisted coding with Claude
+- **iFlow CLI**: Hooks for iFlow AI CLI tool

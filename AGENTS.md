@@ -70,9 +70,37 @@ def my_command(option):
 
 ### Add AI Tool
 
-1. Add to `get_ai_tools()` in `cli.py`
-2. Implement setup function
-3. Call in `setup()` command
+Adding a new AI tool integration:
+
+1. Create `aibgm/commands/integrations/<toolname>.py`
+2. Implement `AIToolIntegration` abstract class
+3. Register in `aibgm/commands/integrations/registry.py`
+
+Example:
+```python
+from aibgm.commands.integrations import AIToolIntegration
+
+class NewToolIntegration(AIToolIntegration):
+    def get_tool_info(self) -> Tuple[str, str]:
+        return ("newtool", "New Tool Name")
+    
+    def get_settings_path(self) -> Path:
+        return Path.home() / ".newtool" / "settings.json"
+    
+    def setup_hooks(self, settings: dict) -> dict:
+        # Configure hooks
+        return settings
+```
+
+Then register:
+```python
+# In registry.py
+_integrations = [
+    ClaudeIntegration,
+    IFlowIntegration,
+    NewToolIntegration,  # Add here
+]
+```
 
 ## Testing
 

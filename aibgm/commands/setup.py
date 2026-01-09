@@ -9,26 +9,7 @@ from pathlib import Path
 
 import click
 
-
-def get_ai_tools() -> list:
-    """Get supported AI tools."""
-    return [
-        ("claude", "Claude Code"),
-        ("iflow", "iFlow CLI"),
-    ]
-
-
-def get_settings_path(tool: str) -> Path:
-    """Get the settings path for the specified AI tool."""
-    home = Path.home()
-
-    if tool == "claude":
-        return home / ".claude" / "settings.json"
-
-    if tool == "iflow":
-        return home / ".iflow" / "settings.json"
-
-    raise ValueError(f"Unknown AI tool: {tool}")
+from aibgm.commands.integrations.registry import IntegrationRegistry
 
 
 def load_settings(path: Path) -> dict:
@@ -43,145 +24,19 @@ def save_settings(path: Path, settings: dict) -> None:
         json.dump(settings, f, indent=2, ensure_ascii=False)
 
 
-def setup_iflow(settings: dict) -> dict:
-    """Setup iFlow integration.
-
-    Args:
-        settings: The existing settings dictionary.
-
-    Returns:
-        Updated settings dictionary.
-    """
-    hooks_config = {
-        "UserPromptSubmit": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm play work 0",
-                    }
-                ]
-            }
-        ],
-        "Stop": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm play done",
-                    }
-                ]
-            }
-        ],
-        "SessionEnd": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm stop",
-                    }
-                ]
-            }
-        ],
-        "Notification": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm play notification 0",
-                    }
-                ]
-            }
-        ],
-    }
-
-    # Initialize hooks if it doesn't exist
-    if "hooks" not in settings:
-        settings["hooks"] = {}
-
-    # Update only UserPromptSubmit, Stop, SessionEnd, and Notification, keep other hooks intact
-    settings["hooks"]["UserPromptSubmit"] = hooks_config["UserPromptSubmit"]
-    settings["hooks"]["Stop"] = hooks_config["Stop"]
-    settings["hooks"]["SessionEnd"] = hooks_config["SessionEnd"]
-    settings["hooks"]["Notification"] = hooks_config["Notification"]
-
-    return settings
-
-
-def setup_claude(settings: dict) -> dict:
-    """Setup Claude Code integration.
-
-    Args:
-        settings: The existing settings dictionary.
-
-    Returns:
-        Updated settings dictionary.
-    """
-    hooks_config = {
-        "UserPromptSubmit": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm play work 0",
-                    }
-                ]
-            }
-        ],
-        "Stop": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm play done",
-                    }
-                ]
-            }
-        ],
-        "SessionEnd": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm stop",
-                    }
-                ]
-            }
-        ],
-        "Notification": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "ai-bgm play notification 0",
-                    }
-                ]
-            }
-        ],
-    }
-
-    # Initialize hooks if it doesn't exist
-    if "hooks" not in settings:
-        settings["hooks"] = {}
-
-    # Update only UserPromptSubmit, Stop, SessionEnd, and Notification, keep other hooks intact
-    settings["hooks"]["UserPromptSubmit"] = hooks_config["UserPromptSubmit"]
-    settings["hooks"]["Stop"] = hooks_config["Stop"]
-    settings["hooks"]["SessionEnd"] = hooks_config["SessionEnd"]
-    settings["hooks"]["Notification"] = hooks_config["Notification"]
-
-    return settings
-
-
 @click.command()
 def setup():
     """Setup AI BGM integration with AI tools."""
-    ai_tools = get_ai_tools()
+    # Get all available integrations
+    integrations = IntegrationRegistry.get_all_integrations()
 
+    # Display menu
     click.echo("Select AI tool:")
-    for i, (tool_id, tool_name) in enumerate(ai_tools, 1):
+    for i, integration in enumerate(integrations, 1):
+        tool_id, tool_name = integration.get_tool_info()
         click.echo(f"{i}. {tool_name}")
 
+    # Get user selection
     try:
         user_input = click.prompt("Enter option", type=str).strip()
         if not user_input:
@@ -189,11 +44,11 @@ def setup():
             sys.exit(0)
 
         index = int(user_input) - 1
-        if 0 <= index < len(ai_tools):
-            tool_id = ai_tools[index][0]
+        if 0 <= index < len(integrations):
+            selected_integration = integrations[index]
         else:
             click.echo(
-                f"Error: Invalid option, please enter 1-{len(ai_tools)}",
+                f"Error: Invalid option, please enter 1-{len(integrations)}",
                 err=True,
             )
             sys.exit(1)
@@ -205,7 +60,7 @@ def setup():
         sys.exit(0)
 
     # Get settings path
-    settings_path = get_settings_path(tool_id)
+    settings_path = selected_integration.get_settings_path()
 
     if not settings_path.exists():
         click.echo(f"Error: Settings file not found at {settings_path}", err=True)
@@ -214,17 +69,12 @@ def setup():
     # Load existing settings
     settings = load_settings(settings_path)
 
-    # Setup integration based on tool type
-    if tool_id == "claude":
-        settings = setup_claude(settings)
-    elif tool_id == "iflow":
-        settings = setup_iflow(settings)
-    else:
-        click.echo(f"Error: Unknown tool: {tool_id}", err=True)
-        sys.exit(1)
+    # Setup integration
+    settings = selected_integration.setup_hooks(settings)
 
     # Save updated settings
     save_settings(settings_path, settings)
 
-    click.echo(f"Successfully configured AI BGM for {ai_tools[index][1]}")
+    tool_id, tool_name = selected_integration.get_tool_info()
+    click.echo(f"Successfully configured AI BGM for {tool_name}")
     click.echo(f"Settings saved to: {settings_path}")
