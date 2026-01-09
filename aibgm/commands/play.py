@@ -24,6 +24,7 @@ from aibgm.utils.common import (
     cleanup_pid,
     is_bgm_enabled,
 )
+from aibgm.utils.logger import LogManager
 
 
 def kill_existing_process() -> bool:
@@ -80,7 +81,9 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         assets_path: Path to the assets/sounds directory
         repeat: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
-    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: repeat parameter = {repeat}, type = {type(repeat)}")
+    print(
+        f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: repeat parameter = {repeat}, type = {type(repeat)}"
+    )
     sys.stdout.flush()
     config = load_builtin_config()
 
@@ -163,7 +166,9 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
             loop_count += 1
             # Log every 10 seconds (100 * 0.1s = 10s)
             if loop_count % 100 == 0:
-                print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Still playing... (loop_count={loop_count})")
+                print(
+                    f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: Still playing... (loop_count={loop_count})"
+                )
                 sys.stdout.flush()
 
     except KeyboardInterrupt:
@@ -248,31 +253,14 @@ def run_player_daemon(music_type: str, loop: int) -> None:
         music_type: Either 'work', 'done', or 'notification'
         loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
-    # First, write to stderr before redirection
-    sys.stderr.write(f"[DEBUG] run_player_daemon called with music_type={music_type}, loop={loop}, type(loop)={type(loop)}\n")
-    sys.stderr.flush()
-    
-    # Redirect standard file descriptors to log file
-    sys.stdout.flush()
-    sys.stderr.flush()
+    # Setup logging with automatic rotation
+    log_manager = LogManager.get_log_manager(max_lines=1000, keep_lines=500)
+    log_manager.setup_daemon_logging()
 
-    # Get log file path
-    config_dir = Path.home() / ".config" / "ai-bgm"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    log_file = config_dir / "bgm_player.log"
-
-    # Redirect stdout and stderr to log file
-    log_fd = os.open(str(log_file), os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
-    os.dup2(log_fd, sys.stdout.fileno())
-    os.dup2(log_fd, sys.stderr.fileno())
-    os.close(log_fd)
-    
-    # Reopen stdout and stderr with line buffering
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', buffering=1)
-    sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', buffering=1)
-    
     # Debug: log the parameters
-    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: run_player_daemon called with music_type={music_type}, loop={loop}, type(loop)={type(loop)}")
+    print(
+        f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: run_player_daemon called with music_type={music_type}, loop={loop}, type(loop)={type(loop)}"
+    )
 
     # Register cleanup handler
     def signal_handler(signum, frame):
@@ -294,7 +282,9 @@ def run_player_daemon(music_type: str, loop: int) -> None:
     assets_path = get_assets_path()
 
     if not assets_path.exists():
-        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error: Assets directory not found: {assets_path}")
+        print(
+            f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error: Assets directory not found: {assets_path}"
+        )
         cleanup_pid()
         sys.exit(1)
 
@@ -305,7 +295,9 @@ def run_player_daemon(music_type: str, loop: int) -> None:
 @click.command()
 @click.argument("music_type", type=click.Choice(["work", "done", "notification"]))
 @click.argument("loop", type=int, default=1, required=False)
-@click.option("--daemon", is_flag=True, hidden=True, help="Run as daemon process (internal use only)")
+@click.option(
+    "--daemon", is_flag=True, hidden=True, help="Run as daemon process (internal use only)"
+)
 def play(music_type: str, loop: int, daemon: bool):
     """Play music based on saved configuration.
 

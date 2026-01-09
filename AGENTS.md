@@ -37,6 +37,8 @@ AI agent guidelines for working on the AI BGM project.
 
 - PID file: `~/.config/ai-bgm/bgm_player.pid`
 - Log file: `~/.config/ai-bgm/bgm_player.log`
+  - Auto-rotates at 1000 lines
+  - Keeps last 500 lines
 - Kill with `SIGTERM`, fallback `SIGKILL`
 
 ## Common Tasks

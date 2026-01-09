@@ -71,6 +71,9 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
 |--------|----------------|
 | `cli.py` | Unified CLI with subcommands for play/stop/select/setup/enable |
 | `main.py` | Local development entry point (not packaged) |
+| `commands/` | Individual command implementations |
+| `utils/common.py` | Configuration, PID, and path management |
+| `utils/logger.py` | Log management with automatic rotation |
 
 ### Configuration System
 
@@ -95,7 +98,10 @@ Location: `~/.config/ai-bgm/`
 
 1. **Click CLI**: Uses Click 8.3.1 for unified command structure
 2. **Daemon Mode**: Player runs detached with PID tracking at `~/.config/ai-bgm/bgm_player.pid`
-3. **Log Output**: Daemon logs to `~/.config/ai-bgm/bgm_player.log`
+3. **Log Management**: Automatic log rotation
+   - Max 1000 lines before rotation
+   - Keeps 500 most recent lines
+   - Logs to `~/.config/ai-bgm/bgm_player.log`
 4. **Signal Handling**: Graceful shutdown on SIGTERM/SIGINT
 5. **Cross-Platform**: Uses `platform.system()` for Windows/Unix differences
 

@@ -22,6 +22,7 @@ def get_assets_path() -> Path:
     # Try to get the package installation directory
     try:
         import importlib.resources as resources
+
         # For Python 3.9+
         pkg_path = resources.files("aibgm")
         assets_path = pkg_path / "assets" / "sounds"
@@ -46,6 +47,13 @@ def get_pid_file() -> Path:
     config_dir = Path.home() / ".config" / "ai-bgm"
     config_dir.mkdir(parents=True, exist_ok=True)
     return config_dir / "bgm_player.pid"
+
+
+def get_log_file() -> Path:
+    """Get the path to the log file."""
+    config_dir = Path.home() / ".config" / "ai-bgm"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    return config_dir / "bgm_player.log"
 
 
 def get_selection_file() -> Path:
@@ -104,6 +112,7 @@ def load_builtin_config() -> dict:
     config_file = None
     try:
         import importlib.resources as resources
+
         # For Python 3.9+
         pkg_path = resources.files("aibgm")
         config_file = pkg_path / "config.json"

@@ -232,6 +232,7 @@ pip show pygame
 
 # Check log
 cat ~/.config/ai-bgm/bgm_player.log
+tail -50 ~/.config/ai-bgm/bgm_player.log  # Last 50 lines
 ```
 
 **Music won't stop?**
@@ -241,6 +242,13 @@ ps aux | grep ai-bgm
 kill <pid>
 rm ~/.config/ai-bgm/bgm_player.pid
 ```
+
+**Log file management**
+
+The daemon log file (`~/.config/ai-bgm/bgm_player.log`) is automatically managed:
+- Maximum 1000 lines before rotation
+- Keeps most recent 500 lines after rotation
+- No manual cleanup needed
 
 ## License
 
