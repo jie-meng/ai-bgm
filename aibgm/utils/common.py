@@ -73,6 +73,26 @@ def load_selection() -> str:
         return data.get("selected", "default")
 
 
+def is_bgm_enabled() -> bool:
+    """
+    Check if AI BGM is enabled.
+
+    Returns:
+        True if enabled (default), False if disabled
+    """
+    config_path = get_selection_file()
+
+    if not config_path.exists():
+        return True
+
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("enable", True)
+    except (json.JSONDecodeError, IOError):
+        return True
+
+
 def load_builtin_config() -> dict:
     """
     Load the built-in config.json from the package, merged with config_ext.json if exists.

@@ -210,12 +210,13 @@ ai-bgm select
 ```
 ai-bgm/
 ├── aibgm/
-│   ├── main.py            # Unified CLI entry point
+│   ├── cli.py             # Unified CLI entry point
 │   ├── config.json        # Built-in music configurations
 │   ├── config_ext.json    # Custom music configurations (gitignored)
 │   └── assets/sounds/     # Audio files
 │       ├── default/
 │       └── maou/
+├── main.py                # Local development entry point
 ├── docs/
 │   └── Dev.md             # Development guide
 ├── pyproject.toml

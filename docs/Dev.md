@@ -49,7 +49,7 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
                           ▼
 ┌─────────────────────────────────────────────────────────┐
 │                     Core Module                         │
-│                    main.py (Click)                      │
+│                    cli.py (Click)                       │
 └─────────────────────────────────────────────────────────┘
                           │
                           ▼
@@ -69,7 +69,8 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
 
 | Module | Responsibility |
 |--------|----------------|
-| `main.py` | Unified CLI with subcommands for play/stop/select/setup |
+| `cli.py` | Unified CLI with subcommands for play/stop/select/setup/enable |
+| `main.py` | Local development entry point (not packaged) |
 
 ### Configuration System
 
@@ -115,7 +116,7 @@ Python stdlib:
 
 ### Add New AI Tool Integration
 
-1. Update `get_ai_tools()` in `main.py`:
+1. Update `get_ai_tools()` in `cli.py`:
 
 ```python
 def get_ai_tools():
@@ -159,7 +160,7 @@ For iFlow CLI, the hooks are configured via the `userpromptsubmit` hook. See the
 
 ### Add CLI Option
 
-In `main.py`, use Click decorators:
+In `cli.py`, use Click decorators:
 
 ```python
 @cli.command()

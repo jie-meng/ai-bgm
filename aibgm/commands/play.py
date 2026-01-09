@@ -22,6 +22,7 @@ from aibgm.utils.common import (
     load_builtin_config,
     save_pid,
     cleanup_pid,
+    is_bgm_enabled,
 )
 
 
@@ -311,6 +312,11 @@ def play(music_type: str, loop: int, daemon: bool):
     MUSIC_TYPE: Type of music to play: 'work', 'done', or 'notification'
     LOOP: Number of times to play. 0 for infinite loop, 1+ for specified count. (default: 1)
     """
+    # Check if BGM is enabled
+    if not is_bgm_enabled():
+        click.echo("AI BGM is disabled. Use 'ai-bgm enable' to enable it.")
+        return
+
     if daemon:
         # Running as daemon
         run_player_daemon(music_type, loop)

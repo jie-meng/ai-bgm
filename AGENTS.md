@@ -30,7 +30,8 @@ AI agent guidelines for working on the AI BGM project.
 | Path | Purpose |
 |------|---------|
 | `aibgm/config.json` | BGM configurations |
-| `aibgm/main.py` | Unified CLI entry point |
+| `aibgm/cli.py` | Unified CLI entry point |
+| `main.py` | Local development entry (not packaged) |
 
 ### Daemon Behavior
 
@@ -56,7 +57,7 @@ AI agent guidelines for working on the AI BGM project.
 
 ### Add CLI Option
 
-In `main.py`, use Click decorators:
+In `cli.py`, use Click decorators:
 ```python
 @cli.command()
 @click.option("--option", is_flag=True)
@@ -67,7 +68,7 @@ def my_command(option):
 
 ### Add AI Tool
 
-1. Add to `get_ai_tools()` in `main.py`
+1. Add to `get_ai_tools()` in `cli.py`
 2. Implement setup function
 3. Call in `setup()` command
 
