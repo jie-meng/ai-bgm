@@ -1,3 +1,4 @@
 include aibgm/*.py
 include aibgm/*.json
 recursive-include aibgm/assets *.mp3
+recursive-include aibgm/assets/hooks *.sh
