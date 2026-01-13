@@ -25,8 +25,8 @@ class GeminiIntegration(AIToolIntegration):
         Setup Gemini CLI hooks.
 
         Configures hooks for:
-        - BeforeAgent: User submits prompt -> start work music
-        - AfterAgent: Agent loop ends -> play done music
+        - BeforeModel: User submits prompt -> start work music
+        - AfterModel: Model response ends -> play done music
         - SessionEnd: Session ends -> stop all music
 
         Args:
@@ -35,13 +35,54 @@ class GeminiIntegration(AIToolIntegration):
         Returns:
             Updated settings dictionary
         """
+        # Enable hooks in tools
+        if "tools" not in settings:
+            settings["tools"] = {}
+        settings["tools"]["enableHooks"] = True
+
         # Initialize hooks if it doesn't exist
         if "hooks" not in settings:
             settings["hooks"] = {}
 
         # Configure hooks for AI BGM
-        settings["hooks"]["BeforeAgent"] = [{"type": "command", "command": "ai-bgm play work 0"}]
-        settings["hooks"]["AfterAgent"] = [{"type": "command", "command": "ai-bgm play done"}]
-        settings["hooks"]["SessionEnd"] = [{"type": "command", "command": "ai-bgm stop"}]
+        settings["hooks"]["BeforeModel"] = [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "name": "Play work music",
+                        "type": "command",
+                        "command": "ai-bgm play work 0",
+                        "description": "Play work music"
+                    }
+                ]
+            }
+        ]
+        settings["hooks"]["AfterModel"] = [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "name": "Play done music",
+                        "type": "command",
+                        "command": "ai-bgm play done",
+                        "description": "Play done music"
+                    }
+                ]
+            }
+        ]
+        settings["hooks"]["SessionEnd"] = [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "name": "Stop music",
+                        "type": "command",
+                        "command": "ai-bgm stop",
+                        "description": "Stop all music"
+                    }
+                ]
+            }
+        ]
 
         return settings
