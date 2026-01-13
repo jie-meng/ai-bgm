@@ -66,7 +66,12 @@ Interactively choose from available configurations (e.g., `maou`, `default`). Se
 ai-bgm setup
 ```
 
-Currently supports **Claude Code** and **iFlow CLI** - music auto-plays when you submit prompts and stops when done.
+Currently supports:
+
+- **Claude Code**
+- **Cursor** (Cursor hooks is supported for Cursor GUI only. cursor-agent cli does not support hooks yet.)
+- **Gemini CLI**
+- **iFlow CLI**
 
 ### Manual Commands
 
