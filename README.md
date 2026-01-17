@@ -69,7 +69,7 @@ ai-bgm setup
 Currently supports:
 
 - **Claude Code**
-- **Cursor** (Cursor hooks is supported for Cursor GUI only. cursor-agent cli does not support hooks yet.)
+- **Cursor** (Cursor Hooks Notification not yet supported)
 - **Gemini CLI**
 - **iFlow CLI**
 
