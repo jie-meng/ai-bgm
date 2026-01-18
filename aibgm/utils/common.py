@@ -8,6 +8,8 @@ import os
 import sys
 from pathlib import Path
 
+from aibgm.utils.platform_utils import is_windows
+
 
 def get_assets_path() -> Path:
     """
@@ -42,32 +44,48 @@ def get_assets_path() -> Path:
     return assets_path
 
 
+def get_config_dir() -> Path:
+    """
+    Get the configuration directory path (cross-platform).
+    
+    Returns:
+        - Linux/macOS: ~/.config/ai-bgm
+        - Windows: %APPDATA%/ai-bgm
+    """
+    if is_windows():
+        # Windows: use AppData/Roaming
+        appdata = os.getenv("APPDATA")
+        if appdata:
+            config_dir = Path(appdata) / "ai-bgm"
+        else:
+            # Fallback to user home
+            config_dir = Path.home() / "ai-bgm"
+    else:
+        # Linux/macOS: use ~/.config/ai-bgm
+        config_dir = Path.home() / ".config" / "ai-bgm"
+    
+    config_dir.mkdir(parents=True, exist_ok=True)
+    return config_dir
+
+
 def get_pid_file() -> Path:
     """Get the path to the PID file."""
-    config_dir = Path.home() / ".config" / "ai-bgm"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    return config_dir / "bgm_player.pid"
+    return get_config_dir() / "bgm_player.pid"
 
 
 def get_lock_file() -> Path:
     """Get the path to the lock file for preventing concurrent starts."""
-    config_dir = Path.home() / ".config" / "ai-bgm"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    return config_dir / "bgm_player.lock"
+    return get_config_dir() / "bgm_player.lock"
 
 
 def get_log_file() -> Path:
     """Get the path to the log file."""
-    config_dir = Path.home() / ".config" / "ai-bgm"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    return config_dir / "bgm_player.log"
+    return get_config_dir() / "bgm_player.log"
 
 
 def get_selection_file() -> Path:
     """Get the path to the selection file."""
-    config_dir = Path.home() / ".config" / "ai-bgm"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    return config_dir / "selection.json"
+    return get_config_dir() / "selection.json"
 
 
 def load_selection() -> str:

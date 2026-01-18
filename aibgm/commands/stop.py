@@ -3,17 +3,14 @@
 Stop music command for AI BGM.
 """
 
-import os
-import signal
-import sys
-import time
-import fcntl
 import subprocess
 from pathlib import Path
 
 import click
 
 from aibgm.utils.common import get_pid_file, get_lock_file
+from aibgm.utils.process import ProcessManager, FileLock
+from aibgm.utils.platform_utils import is_unix
 
 
 def kill_existing_player() -> bool:
@@ -26,92 +23,32 @@ def kill_existing_player() -> bool:
     killed_any = False
     pid_file = get_pid_file()
 
-    # Kill all processes matching ai-bgm play --daemon
-    try:
-        # Use pgrep to find all ai-bgm daemon processes
-        result = subprocess.run(
-            ["pgrep", "-f", "ai-bgm play --daemon"],
-            capture_output=True,
-            text=True,
-        )
-
-        if result.returncode == 0 and result.stdout.strip():
-            pids = [int(pid) for pid in result.stdout.strip().split("\n")]
-            for pid in pids:
+    # Kill all processes matching ai-bgm play --daemon (Unix only - uses pgrep)
+    if is_unix():
+        killed_any = _kill_all_daemon_processes()
+        if killed_any:
+            # Clean up PID file
+            if pid_file.exists():
                 try:
-                    os.kill(pid, signal.SIGTERM)
-                    killed_any = True
-                except (ProcessLookupError, PermissionError):
+                    pid_file.unlink()
+                except (FileNotFoundError, PermissionError):
                     pass
+            return True
 
-            # Wait longer for processes to terminate gracefully
-            for _ in range(20):  # Wait up to 2 seconds
-                time.sleep(0.1)
-                result = subprocess.run(
-                    ["pgrep", "-f", "ai-bgm play --daemon"],
-                    capture_output=True,
-                    text=True,
-                )
-                if result.returncode != 0 or not result.stdout.strip():
-                    # All processes terminated
-                    break
-            else:
-                # Force kill any remaining processes
-                result = subprocess.run(
-                    ["pgrep", "-f", "ai-bgm play --daemon"],
-                    capture_output=True,
-                    text=True,
-                )
-                if result.returncode == 0 and result.stdout.strip():
-                    pids = [int(pid) for pid in result.stdout.strip().split("\n")]
-                    for pid in pids:
-                        try:
-                            os.kill(pid, signal.SIGKILL)
-                        except (ProcessLookupError, PermissionError):
-                            pass
-                    time.sleep(0.2)
-    except (FileNotFoundError, subprocess.SubprocessError):
-        # pgrep not available or failed, fallback to PID file method
-        if not pid_file.exists():
-            return False
+    # Fallback: Use PID file method (works on all platforms)
+    if not pid_file.exists():
+        return False
 
-        try:
-            with open(pid_file, "r") as f:
-                old_pid = int(f.read().strip())
+    try:
+        with open(pid_file, "r") as f:
+            old_pid = int(f.read().strip())
 
-            # Check if the process is still running
-            try:
-                os.kill(old_pid, 0)  # This just checks if process exists
-            except ProcessLookupError:
-                # Process doesn't exist, remove stale PID file
-                pid_file.unlink()
-                return False
-
-            # Kill the existing process
-            try:
-                os.kill(old_pid, signal.SIGTERM)
-                # Wait longer for the process to terminate gracefully
-                for _ in range(20):  # Wait up to 2 seconds
-                    time.sleep(0.1)
-                    try:
-                        os.kill(old_pid, 0)
-                    except ProcessLookupError:
-                        # Process terminated
-                        break
-                else:
-                    # Force kill if still running after 2 seconds
-                    try:
-                        os.kill(old_pid, signal.SIGKILL)
-                        time.sleep(0.2)
-                    except ProcessLookupError:
-                        pass
-
-                killed_any = True
-            except PermissionError:
-                # Can't kill other user's process
-                return False
-        except (ValueError, IOError):
-            return False
+        # Kill the process using ProcessManager
+        killed = ProcessManager.kill_process(old_pid, graceful=True, timeout=2.0)
+        if killed:
+            killed_any = True
+    except (ValueError, IOError):
+        pass
 
     # Clean up PID file
     if pid_file.exists():
@@ -123,26 +60,47 @@ def kill_existing_player() -> bool:
     return killed_any
 
 
+def _kill_all_daemon_processes() -> bool:
+    """
+    Kill all daemon processes using pgrep (Unix only).
+
+    Returns:
+        True if processes were killed, False otherwise.
+    """
+    try:
+        # Use pgrep to find all ai-bgm daemon processes
+        result = subprocess.run(
+            ["pgrep", "-f", "ai-bgm play --daemon"],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode == 0 and result.stdout.strip():
+            pids = [int(pid) for pid in result.stdout.strip().split("\n")]
+            killed_any = False
+
+            for pid in pids:
+                if ProcessManager.kill_process(pid, graceful=True, timeout=2.0):
+                    killed_any = True
+
+            return killed_any
+    except (FileNotFoundError, subprocess.SubprocessError):
+        # pgrep not available
+        pass
+
+    return False
+
+
 @click.command()
 def stop():
     """Stop any playing music."""
-    # Use file lock to prevent race with concurrent start
     lock_file = get_lock_file()
-    lock_fd = None
 
-    try:
-        lock_fd = os.open(str(lock_file), os.O_CREAT | os.O_RDWR, 0o644)
-        # Try to acquire exclusive lock (will block if another process holds it)
-        fcntl.flock(lock_fd, fcntl.LOCK_EX)
-
+    # Use file lock to prevent race with concurrent start
+    with FileLock(str(lock_file)):
         # Kill any existing BGM player process
         killed = kill_existing_player()
         if killed:
             click.echo("Stopped BGM player")
         else:
             click.echo("No BGM player is currently running")
-    finally:
-        # Release lock
-        if lock_fd is not None:
-            fcntl.flock(lock_fd, fcntl.LOCK_UN)
-            os.close(lock_fd)

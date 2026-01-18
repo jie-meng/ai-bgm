@@ -58,7 +58,9 @@ sudo dnf install python3-devel SDL2-devel
 ai-bgm select
 ```
 
-Interactively choose from available configurations (e.g., `maou`, `default`). Selection is saved to `~/.config/ai-bgm/selection.json`.
+Interactively choose from available configurations (e.g., `maou`, `default`). Selection is saved to:
+- **Linux/macOS**: `~/.config/ai-bgm/selection.json`
+- **Windows**: `%APPDATA%\ai-bgm\selection.json`
 
 #### 2. Setup AI Tool Integration
 
@@ -235,22 +237,32 @@ ai-bgm/
 # Check pygame
 pip show pygame
 
-# Check log
+# Check log (Linux/macOS)
 cat ~/.config/ai-bgm/bgm_player.log
 tail -50 ~/.config/ai-bgm/bgm_player.log  # Last 50 lines
+
+# Windows
+type %APPDATA%\ai-bgm\bgm_player.log
 ```
 
 **Music won't stop?**
 ```bash
-# Kill stale process
+# Force kill if needed (Linux/macOS)
 ps aux | grep ai-bgm
 kill <pid>
 rm ~/.config/ai-bgm/bgm_player.pid
+
+# Windows
+tasklist | findstr ai-bgm
+taskkill /PID <pid> /F
+del %APPDATA%\ai-bgm\bgm_player.pid
 ```
 
 **Log file management**
 
-The daemon log file (`~/.config/ai-bgm/bgm_player.log`) is automatically managed:
+The daemon log file is automatically managed:
+- **Linux/macOS**: `~/.config/ai-bgm/bgm_player.log`
+- **Windows**: `%APPDATA%\ai-bgm\bgm_player.log`
 - Maximum 1000 lines before rotation
 - Keeps most recent 500 lines after rotation
 - No manual cleanup needed

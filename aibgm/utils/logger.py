@@ -121,9 +121,9 @@ class LogManager:
         Returns:
             Path to bgm_player.log in user config directory
         """
-        config_dir = Path.home() / ".config" / "ai-bgm"
-        config_dir.mkdir(parents=True, exist_ok=True)
-        return config_dir / "bgm_player.log"
+        from aibgm.utils.common import get_config_dir
+        
+        return get_config_dir() / "bgm_player.log"
 
     @staticmethod
     def get_log_manager(

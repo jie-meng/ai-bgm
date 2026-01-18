@@ -4,13 +4,10 @@ Play music command for AI BGM.
 """
 
 import os
-import signal
 import sys
 import time
-import platform
 import subprocess
 import random
-import fcntl
 from pathlib import Path
 
 import click
@@ -27,6 +24,8 @@ from aibgm.utils.common import (
     is_bgm_enabled,
 )
 from aibgm.utils.logger import LogManager
+from aibgm.utils.process import ProcessManager, FileLock, setup_signal_handlers
+from aibgm.utils.platform_utils import is_windows
 
 
 def kill_existing_process() -> bool:
@@ -46,39 +45,19 @@ def kill_existing_process() -> bool:
             old_pid = int(f.read().strip())
 
         # Check if the process is still running
-        try:
-            os.kill(old_pid, 0)  # This just checks if process exists
-        except ProcessLookupError:
+        if not ProcessManager.check_process_exists(old_pid):
             # Process doesn't exist, remove stale PID file
             pid_file.unlink()
             return False
 
         # Kill the existing process
-        try:
-            os.kill(old_pid, signal.SIGTERM)
-            # Wait longer for the process to terminate gracefully
-            for _ in range(20):  # Wait up to 2 seconds
-                time.sleep(0.1)
-                try:
-                    os.kill(old_pid, 0)
-                except ProcessLookupError:
-                    # Process terminated
-                    break
-            else:
-                # Force kill if still running after 2 seconds
-                try:
-                    os.kill(old_pid, signal.SIGKILL)
-                    time.sleep(0.2)
-                except ProcessLookupError:
-                    pass
+        killed = ProcessManager.kill_process(old_pid, graceful=True, timeout=2.0)
 
-            # Clean up PID file if it still exists
-            if pid_file.exists():
-                pid_file.unlink()
-            return True
-        except PermissionError:
-            # Can't kill other user's process
-            return False
+        # Clean up PID file if it still exists
+        if pid_file.exists():
+            pid_file.unlink()
+
+        return killed
     except (ValueError, IOError):
         return False
 
@@ -217,28 +196,18 @@ def start_background_player(music_type: str, loop: int) -> None:
         music_type: Either 'work', 'done', or 'notification'
         loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
-    # Use file lock to prevent concurrent start
     lock_file = get_lock_file()
-    lock_fd = None
 
-    try:
-        lock_fd = os.open(str(lock_file), os.O_CREAT | os.O_RDWR, 0o644)
-        # Try to acquire exclusive lock (will block if another process holds it)
-        fcntl.flock(lock_fd, fcntl.LOCK_EX)
-
+    # Use file lock to prevent concurrent start
+    with FileLock(str(lock_file)):
         # Kill any existing BGM player process first
         killed = kill_existing_process()
 
         # Use subprocess to start a detached background process
-        # Get the Python executable
-        python_exe = sys.executable
-
-        # Use the ai-bgm command directly (which is installed as a script entry point)
-        # This works both in development and after pip install
         args = ["ai-bgm", "play", "--daemon", music_type, str(loop)]
 
         # Start the background process
-        if platform.system() == "Windows":
+        if is_windows():
             # On Windows, use CREATE_NO_WINDOW flag
             DETACHED_PROCESS = 0x00000008
             subprocess.Popen(
@@ -276,11 +245,6 @@ def start_background_player(music_type: str, loop: int) -> None:
                     click.echo(f"Background player PID: {pid}")
             except Exception:
                 pass
-    finally:
-        # Release lock
-        if lock_fd is not None:
-            fcntl.flock(lock_fd, fcntl.LOCK_UN)
-            os.close(lock_fd)
 
 
 def run_player_daemon(music_type: str, loop: int) -> None:
@@ -324,8 +288,8 @@ def run_player_daemon(music_type: str, loop: int) -> None:
             print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error during cleanup: {e}")
         sys.exit(0)
 
-    signal.signal(signal.SIGTERM, signal_handler)
-    signal.signal(signal.SIGINT, signal_handler)
+    # Setup signal handlers
+    setup_signal_handlers(signal_handler)
 
     # Load the selected configuration
     selection = load_selection()

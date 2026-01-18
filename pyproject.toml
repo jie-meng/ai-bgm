@@ -34,6 +34,7 @@ ai-bgm = "aibgm.cli:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]
+exclude = ["tests", "tests.*"]
 
 [tool.black]
 line-length = 100
