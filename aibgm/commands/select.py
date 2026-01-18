@@ -52,19 +52,12 @@ def select():
         click.echo(f"{i}. {option}{current_marker}")
 
     try:
-        default_index = (
-            options.index(current_selection) + 1
-            if current_selection in options
-            else 1
-        )
-        user_input = (
-            click.prompt(
-                f"Enter option (1-{len(options)}, current {default_index})",
-                default=str(default_index),
-                show_default=False,
-            )
-            .strip()
-        )
+        default_index = options.index(current_selection) + 1 if current_selection in options else 1
+        user_input = click.prompt(
+            f"Enter option (1-{len(options)}, current {default_index})",
+            default=str(default_index),
+            show_default=False,
+        ).strip()
         if not user_input:
             if current_selection and current_selection in options:
                 selection = current_selection

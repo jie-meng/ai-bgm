@@ -10,6 +10,7 @@ import time
 import platform
 import subprocess
 import random
+import fcntl
 from pathlib import Path
 
 import click
@@ -18,6 +19,7 @@ import pygame
 from aibgm.utils.common import (
     get_assets_path,
     get_pid_file,
+    get_lock_file,
     load_selection,
     load_builtin_config,
     save_pid,
@@ -54,15 +56,25 @@ def kill_existing_process() -> bool:
         # Kill the existing process
         try:
             os.kill(old_pid, signal.SIGTERM)
-            # Wait a bit for the process to terminate
-            time.sleep(0.5)
-            # Force kill if still running
-            try:
-                os.kill(old_pid, 0)
-                os.kill(old_pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            pid_file.unlink()
+            # Wait longer for the process to terminate gracefully
+            for _ in range(20):  # Wait up to 2 seconds
+                time.sleep(0.1)
+                try:
+                    os.kill(old_pid, 0)
+                except ProcessLookupError:
+                    # Process terminated
+                    break
+            else:
+                # Force kill if still running after 2 seconds
+                try:
+                    os.kill(old_pid, signal.SIGKILL)
+                    time.sleep(0.2)
+                except ProcessLookupError:
+                    pass
+
+            # Clean up PID file if it still exists
+            if pid_file.exists():
+                pid_file.unlink()
             return True
         except PermissionError:
             # Can't kill other user's process
@@ -182,7 +194,19 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
         # Stop the music and cleanup
         pygame.mixer.music.stop()
         pygame.mixer.quit()
-        cleanup_pid()
+        # Only cleanup PID if we're in daemon mode (current_pid will be in globals)
+        # This function is called both from daemon and potentially other contexts
+        try:
+            current_pid = os.getpid()
+            pid_file = get_pid_file()
+            if pid_file.exists():
+                with open(pid_file, "r") as f:
+                    saved_pid = int(f.read().strip())
+                if saved_pid == current_pid:
+                    cleanup_pid()
+        except Exception:
+            # Fallback: just cleanup
+            cleanup_pid()
 
 
 def start_background_player(music_type: str, loop: int) -> None:
@@ -193,56 +217,70 @@ def start_background_player(music_type: str, loop: int) -> None:
         music_type: Either 'work', 'done', or 'notification'
         loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
-    # Kill any existing BGM player process first
-    killed = kill_existing_process()
+    # Use file lock to prevent concurrent start
+    lock_file = get_lock_file()
+    lock_fd = None
 
-    # Use subprocess to start a detached background process
-    # Get the Python executable
-    python_exe = sys.executable
+    try:
+        lock_fd = os.open(str(lock_file), os.O_CREAT | os.O_RDWR, 0o644)
+        # Try to acquire exclusive lock (will block if another process holds it)
+        fcntl.flock(lock_fd, fcntl.LOCK_EX)
 
-    # Use the ai-bgm command directly (which is installed as a script entry point)
-    # This works both in development and after pip install
-    args = ["ai-bgm", "play", "--daemon", music_type, str(loop)]
+        # Kill any existing BGM player process first
+        killed = kill_existing_process()
 
-    # Start the background process
-    if platform.system() == "Windows":
-        # On Windows, use CREATE_NO_WINDOW flag
-        DETACHED_PROCESS = 0x00000008
-        subprocess.Popen(
-            args,
-            creationflags=DETACHED_PROCESS,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            close_fds=True,
-        )
-    else:
-        # On Unix-like systems
-        subprocess.Popen(
-            args,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            start_new_session=True,
-            close_fds=True,
-        )
+        # Use subprocess to start a detached background process
+        # Get the Python executable
+        python_exe = sys.executable
 
-    if killed:
-        click.echo("Stopped previous BGM player")
-    click.echo("BGM player started in background")
+        # Use the ai-bgm command directly (which is installed as a script entry point)
+        # This works both in development and after pip install
+        args = ["ai-bgm", "play", "--daemon", music_type, str(loop)]
 
-    # Give it a moment to start
-    time.sleep(0.5)
+        # Start the background process
+        if platform.system() == "Windows":
+            # On Windows, use CREATE_NO_WINDOW flag
+            DETACHED_PROCESS = 0x00000008
+            subprocess.Popen(
+                args,
+                creationflags=DETACHED_PROCESS,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+            )
+        else:
+            # On Unix-like systems
+            subprocess.Popen(
+                args,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
+                close_fds=True,
+            )
 
-    # Try to read the PID if it was saved
-    pid_file = get_pid_file()
-    if pid_file.exists():
-        try:
-            with open(pid_file, "r") as f:
-                pid = f.read().strip()
-                click.echo(f"Background player PID: {pid}")
-        except Exception:
-            pass
+        if killed:
+            click.echo("Stopped previous BGM player")
+        click.echo("BGM player started in background")
+
+        # Give it a moment to start and save PID
+        time.sleep(0.5)
+
+        # Try to read the PID if it was saved
+        pid_file = get_pid_file()
+        if pid_file.exists():
+            try:
+                with open(pid_file, "r") as f:
+                    pid = f.read().strip()
+                    click.echo(f"Background player PID: {pid}")
+            except Exception:
+                pass
+    finally:
+        # Release lock
+        if lock_fd is not None:
+            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            os.close(lock_fd)
 
 
 def run_player_daemon(music_type: str, loop: int) -> None:
@@ -262,18 +300,32 @@ def run_player_daemon(music_type: str, loop: int) -> None:
         f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] DEBUG: run_player_daemon called with music_type={music_type}, loop={loop}, type(loop)={type(loop)}"
     )
 
+    # Save current PID first
+    current_pid = os.getpid()
+    save_pid()
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] BGM player daemon started (PID: {current_pid})")
+
     # Register cleanup handler
     def signal_handler(signum, frame):
         print(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Received termination signal, stopping...")
-        cleanup_pid()
+        # Only cleanup PID if it's still ours (prevent deleting newer process's PID)
+        try:
+            pid_file = get_pid_file()
+            if pid_file.exists():
+                with open(pid_file, "r") as f:
+                    saved_pid = int(f.read().strip())
+                if saved_pid == current_pid:
+                    cleanup_pid()
+                else:
+                    print(
+                        f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] PID file belongs to newer process ({saved_pid}), not cleaning up"
+                    )
+        except Exception as e:
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error during cleanup: {e}")
         sys.exit(0)
 
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
-
-    # Save current PID
-    save_pid()
-    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] BGM player daemon started (PID: {os.getpid()})")
 
     # Load the selected configuration
     selection = load_selection()

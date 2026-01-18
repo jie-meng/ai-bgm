@@ -53,9 +53,9 @@ class GeminiIntegration(AIToolIntegration):
                         "name": "Play work music",
                         "type": "command",
                         "command": "ai-bgm play work 0",
-                        "description": "Play work music"
+                        "description": "Play work music",
                     }
-                ]
+                ],
             }
         ]
         settings["hooks"]["AfterModel"] = [
@@ -66,9 +66,9 @@ class GeminiIntegration(AIToolIntegration):
                         "name": "Play done music",
                         "type": "command",
                         "command": "ai-bgm play done",
-                        "description": "Play done music"
+                        "description": "Play done music",
                     }
-                ]
+                ],
             }
         ]
         settings["hooks"]["SessionEnd"] = [
@@ -79,9 +79,9 @@ class GeminiIntegration(AIToolIntegration):
                         "name": "Stop music",
                         "type": "command",
                         "command": "ai-bgm stop",
-                        "description": "Stop all music"
+                        "description": "Stop all music",
                     }
-                ]
+                ],
             }
         ]
 

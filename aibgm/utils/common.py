@@ -49,6 +49,13 @@ def get_pid_file() -> Path:
     return config_dir / "bgm_player.pid"
 
 
+def get_lock_file() -> Path:
+    """Get the path to the lock file for preventing concurrent starts."""
+    config_dir = Path.home() / ".config" / "ai-bgm"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    return config_dir / "bgm_player.lock"
+
+
 def get_log_file() -> Path:
     """Get the path to the log file."""
     config_dir = Path.home() / ".config" / "ai-bgm"
