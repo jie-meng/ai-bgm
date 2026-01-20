@@ -58,7 +58,7 @@ sudo dnf install python3-devel SDL2-devel
 ai-bgm select
 ```
 
-Interactively choose from available configurations (e.g., `maou`, `default`). Selection is saved to:
+Interactively choose from available configurations (e.g., `default`). Selection is saved to:
 - **Linux/macOS**: `~/.config/ai-bgm/selection.json`
 - **Windows**: `%APPDATA%\ai-bgm\selection.json`
 
@@ -178,13 +178,12 @@ ai-bgm select
 
 **Included Configurations**:
 
-- **default**: Minimal sound effects (bubble pop for completion)
-- **maou**: Music from [魔王魂 (Maou Audio)](https://maou.audio/)
+- **default**: Music from [魔王魂 (Maou Audio)](https://maou.audio/)
   - License: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
   - Free for personal and commercial use
   - Modification and redistribution allowed with attribution
   - **DO NOT**: Use for AI music training, claim as your own, or sell on streaming platforms
-  - Attribution: "音乐：魔王魂" (Music: Maou Audio)
+  - Attribution: "音楽：魔王魂" (Music: Maou Audio)
 
 **⚠️ Copyright Warning**:
 
@@ -195,7 +194,7 @@ ai-bgm select
   - Perfect for personal music collections
   - Example: Create `assets/sounds/my_collection/` and configure it in `config_ext.json`
 - **For royalty-free music**: Add to `config.json` and appropriate directories
-- The `.gitignore` file is configured to ignore all directories except `default` and `maou`
+- The `.gitignore` file is configured to ignore all directories except `default`
 
 3. **Select your config**:
 
@@ -221,8 +220,7 @@ ai-bgm/
 │   ├── config.json        # Built-in music configurations
 │   ├── config_ext.json    # Custom music configurations (gitignored)
 │   └── assets/sounds/     # Audio files
-│       ├── default/
-│       └── maou/
+│       └── default/
 ├── main.py                # Local development entry point
 ├── docs/
 │   └── Dev.md             # Development guide
