@@ -208,8 +208,28 @@ ai-bgm select
 |-------|-------------|
 | `work` | List of music files to play during work |
 | `done` | List of music files to play when done |
+| `notification` | List of music files for notifications |
 
-**Note**: File paths are relative to `aibgm/assets/sounds/<config-name>/`
+**File Path Formats**:
+
+- **Simple name**: `song.mp3` → Reads from `assets/sounds/<config-name>/song.mp3`
+- **With folder**: `default/song.mp3` → Reads from `assets/sounds/default/song.mp3`
+
+**Example**:
+
+```json
+{
+  "my_config": {
+    "work": [
+      "my_song.mp3",
+      "default/boss.mp3"
+    ],
+    "done": [
+      "default/congratulations.mp3"
+    ]
+  }
+}
+```
 
 ## File Structure
 

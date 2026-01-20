@@ -104,8 +104,14 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
     # Randomly select one file
     selected_file = random.choice(files)
 
-    # Build the full path
-    full_path = assets_path / selection / selected_file
+    # Build the full path - support folder/file.mp3 format for cross-folder references
+    if "/" in selected_file:
+        # Explicit folder path: folder/file.mp3
+        folder_name, file_name = selected_file.split("/", 1)
+        full_path = assets_path / folder_name / file_name
+    else:
+        # Relative path: use selection as folder (backward compatible)
+        full_path = assets_path / selection / selected_file
 
     if not full_path.exists():
         click.echo(
