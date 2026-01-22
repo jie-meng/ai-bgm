@@ -106,6 +106,30 @@ ai-bgm play work 0
 ai-bgm select
 ```
 
+### Editor Integration
+
+#### Neovim
+
+Add to your `init.lua`:
+
+```lua
+keymap.set("n", "<F10>", function()
+  vim.fn.jobstart("ai-bgm toggle")
+end, { desc = "Toggle AI BGM" })
+```
+
+Press `F10` to toggle BGM playback/pause.
+
+#### Vim
+
+Add to your `.vimrc`:
+
+```vim
+nnoremap <F10> :call system('ai-bgm toggle')<CR>
+```
+
+Press `F10` to toggle BGM playback/pause.
+
 ## Custom Configuration
 
 ### Add Custom Music
