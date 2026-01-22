@@ -30,6 +30,12 @@ ai-bgm select
 pip install .
 ```
 
+If you encounter externally-managed-environment error, then you can install by
+
+```bash
+pip install . --break-system-packages
+```
+
 This installs CLI command:
 - `ai-bgm` - Unified CLI with subcommands: play, stop, select, setup
 
