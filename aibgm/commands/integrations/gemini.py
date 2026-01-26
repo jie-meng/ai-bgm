@@ -40,6 +40,11 @@ class GeminiIntegration(AIToolIntegration):
             settings["tools"] = {}
         settings["tools"]["enableHooks"] = True
 
+        # Enable hooks config
+        if "hooksConfig" not in settings:
+            settings["hooksConfig"] = {}
+        settings["hooksConfig"]["enabled"] = True
+
         # Initialize hooks if it doesn't exist
         if "hooks" not in settings:
             settings["hooks"] = {}
