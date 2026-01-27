@@ -65,6 +65,6 @@ def enable():
     save_enable_state(new_state)
 
     if new_state:
-        click.echo("ai-bgm: enabled")
+        click.echo("bgm: enabled")
     else:
-        click.echo("ai-bgm: disabled")
+        click.echo("bgm: disabled")

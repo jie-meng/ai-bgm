@@ -210,7 +210,7 @@ def start_background_player(music_type: str, loop: int) -> None:
         killed = kill_existing_process()
 
         # Use subprocess to start a detached background process
-        args = ["ai-bgm", "play", "--daemon", music_type, str(loop)]
+        args = ["bgm", "play", "--daemon", music_type, str(loop)]
 
         # Start the background process
         if is_windows():
@@ -328,7 +328,7 @@ def play(music_type: str, loop: int, daemon: bool):
     """
     # Check if BGM is enabled
     if not is_bgm_enabled():
-        click.echo("AI BGM is disabled. Use 'ai-bgm enable' to enable it.")
+        click.echo("AI BGM is disabled. Use 'bgm enable' to enable it.")
         return
 
     if daemon:

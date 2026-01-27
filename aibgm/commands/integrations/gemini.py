@@ -57,7 +57,7 @@ class GeminiIntegration(AIToolIntegration):
                     {
                         "name": "Play work music",
                         "type": "command",
-                        "command": "ai-bgm play work 0",
+                        "command": "bgm play work 0",
                         "description": "Play work music",
                     }
                 ],
@@ -70,7 +70,7 @@ class GeminiIntegration(AIToolIntegration):
                     {
                         "name": "Play done music",
                         "type": "command",
-                        "command": "ai-bgm play done",
+                        "command": "bgm play done",
                         "description": "Play done music",
                     }
                 ],
@@ -83,7 +83,7 @@ class GeminiIntegration(AIToolIntegration):
                     {
                         "name": "Stop music",
                         "type": "command",
-                        "command": "ai-bgm stop",
+                        "command": "bgm stop",
                         "description": "Stop all music",
                     }
                 ],

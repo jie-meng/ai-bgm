@@ -44,10 +44,10 @@ class NewToolIntegration(AIToolIntegration):
         """Setup hooks for New Tool."""
         hooks_config = {
             "UserPromptSubmit": [
-                {"hooks": [{"type": "command", "command": "ai-bgm play work 0"}]}
+                {"hooks": [{"type": "command", "command": "bgm play work 0"}]}
             ],
-            "Stop": [{"hooks": [{"type": "command", "command": "ai-bgm play done"}]}],
-            "SessionEnd": [{"hooks": [{"type": "command", "command": "ai-bgm stop"}]}],
+            "Stop": [{"hooks": [{"type": "command", "command": "bgm play done"}]}],
+            "SessionEnd": [{"hooks": [{"type": "command", "command": "bgm stop"}]}],
         }
 
         if "hooks" not in settings:
@@ -78,7 +78,7 @@ class IntegrationRegistry:
 ### Step 3: Test
 
 ```bash
-ai-bgm setup
+bgm setup
 # Your new tool should appear in the menu
 ```
 

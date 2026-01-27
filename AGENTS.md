@@ -24,8 +24,8 @@ AI agent guidelines for working on the AI BGM project.
 - Type hints required for function signatures
 - Use `pathlib.Path`, not `os.path`
 - Config paths (cross-platform):
-  - Linux/macOS: `~/.config/ai-bgm/`
-  - Windows: `%APPDATA%\ai-bgm\`
+  - Linux/macOS: `~/.config/bgm/`
+  - Windows: `%APPDATA%\bgm\`
 - User selection in `selection.json` within config directory
 
 ### Design Principles
@@ -92,7 +92,7 @@ See source files for detailed usage (docstrings and type hints).
     "done": ["done.mp3"]
   }
 }
-# 3. Test: ai-bgm select
+# 3. Test: bgm select
 ```
 
 ### Add CLI Option
@@ -163,9 +163,9 @@ mypy aibgm/
 ### Manual Testing
 ```bash
 # Test basic functionality
-ai-bgm play work 0
-ai-bgm stop
-ai-bgm select
+bgm play work 0
+bgm stop
+bgm select
 ```
 
 ### When Adding New Features

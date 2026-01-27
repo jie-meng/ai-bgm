@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.scripts]
-ai-bgm = "aibgm.cli:cli"
+bgm = "aibgm.cli:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]

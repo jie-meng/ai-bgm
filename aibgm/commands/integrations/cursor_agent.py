@@ -42,9 +42,9 @@ class CursorAgentIntegration(AIToolIntegration):
             settings["hooks"] = {}
 
         # beforeSubmitPrompt: User submits a prompt -> start work music
-        settings["hooks"]["beforeSubmitPrompt"] = [{"command": "ai-bgm play work 0"}]
+        settings["hooks"]["beforeSubmitPrompt"] = [{"command": "bgm play work 0"}]
 
         # stop: Agent stops -> play done music
-        settings["hooks"]["stop"] = [{"command": "ai-bgm play done"}]
+        settings["hooks"]["stop"] = [{"command": "bgm play done"}]
 
         return settings

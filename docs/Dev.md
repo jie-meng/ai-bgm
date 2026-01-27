@@ -6,7 +6,7 @@
 
 ```bash
 git clone <repo-url>
-cd ai-bgm
+cd bgm
 
 # Install in editable mode
 pip install -e .
@@ -43,7 +43,7 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                      CLI Layer                          │
-│           ai-bgm (play/stop/select/setup)               │
+│           bgm (play/stop/select/setup)               │
 └─────────────────────────────────────────────────────────┘
                           │
                           ▼
@@ -92,16 +92,16 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
 {"selected": "maou"}
 ```
 
-Location: `~/.config/ai-bgm/`
+Location: `~/.config/bgm/`
 
 ### Key Design Patterns
 
 1. **Click CLI**: Uses Click 8.3.1 for unified command structure
-2. **Daemon Mode**: Player runs detached with PID tracking at `~/.config/ai-bgm/bgm_player.pid`
+2. **Daemon Mode**: Player runs detached with PID tracking at `~/.config/bgm/bgm_player.pid`
 3. **Log Management**: Automatic log rotation
    - Max 1000 lines before rotation
    - Keeps 500 most recent lines
-   - Logs to `~/.config/ai-bgm/bgm_player.log`
+   - Logs to `~/.config/bgm/bgm_player.log`
 4. **Signal Handling**: Graceful shutdown on SIGTERM/SIGINT
 5. **Cross-Platform**: Uses `platform.system()` for Windows/Unix differences
 
@@ -163,10 +163,10 @@ class NewToolIntegration(AIToolIntegration):
         """
         hooks_config = {
             "UserPromptSubmit": [
-                {"hooks": [{"type": "command", "command": "ai-bgm play work 0"}]}
+                {"hooks": [{"type": "command", "command": "bgm play work 0"}]}
             ],
-            "Stop": [{"hooks": [{"type": "command", "command": "ai-bgm play done"}]}],
-            "SessionEnd": [{"hooks": [{"type": "command", "command": "ai-bgm stop"}]}],
+            "Stop": [{"hooks": [{"type": "command", "command": "bgm play done"}]}],
+            "SessionEnd": [{"hooks": [{"type": "command", "command": "bgm stop"}]}],
         }
 
         # Initialize hooks if it doesn't exist
@@ -199,7 +199,7 @@ class IntegrationRegistry:
 #### Step 3: Test
 
 ```bash
-ai-bgm setup
+bgm setup
 # Your new tool should appear in the menu
 ```
 
@@ -255,11 +255,11 @@ def my_command(new_option):
 
 ### Manual Testing Checklist
 
-- [ ] `ai-bgm play work 0` loops correctly
-- [ ] `ai-bgm play done` plays once
-- [ ] `ai-bgm stop` kills player
-- [ ] `ai-bgm select` updates selection
-- [ ] `ai-bgm setup` creates valid hooks
+- [ ] `bgm play work 0` loops correctly
+- [ ] `bgm play done` plays once
+- [ ] `bgm stop` kills player
+- [ ] `bgm select` updates selection
+- [ ] `bgm setup` creates valid hooks
 - [ ] New config appears in selection
 - [ ] Audio files play without error
 
@@ -267,13 +267,13 @@ def my_command(new_option):
 
 ```bash
 # Check daemon status
-ps aux | grep "ai-bgm"
+ps aux | grep "bgm"
 
 # View logs
-tail -f ~/.config/ai-bgm/bgm_player.log
+tail -f ~/.config/bgm/bgm_player.log
 
 # Check PID file
-cat ~/.config/ai-bgm/bgm_player.pid
+cat ~/.config/bgm/bgm_player.pid
 
 # Test pygame directly
 python -c "import pygame; pygame.mixer.init(); print('OK')"

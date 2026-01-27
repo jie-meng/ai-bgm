@@ -37,11 +37,11 @@ class ClaudeIntegration(AIToolIntegration):
             Updated settings dictionary
         """
         hooks_config = {
-            "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "ai-bgm play work 0"}]}],
-            "Stop": [{"hooks": [{"type": "command", "command": "ai-bgm play done"}]}],
-            "SessionEnd": [{"hooks": [{"type": "command", "command": "ai-bgm stop"}]}],
+            "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "bgm play work 0"}]}],
+            "Stop": [{"hooks": [{"type": "command", "command": "bgm play done"}]}],
+            "SessionEnd": [{"hooks": [{"type": "command", "command": "bgm stop"}]}],
             "Notification": [
-                {"hooks": [{"type": "command", "command": "ai-bgm play notification 0"}]}
+                {"hooks": [{"type": "command", "command": "bgm play notification 0"}]}
             ],
         }
 

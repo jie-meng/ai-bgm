@@ -9,10 +9,10 @@ AI CLI Background Music Player - A cross-platform tool that plays work music dur
 pip install .
 
 # 2. Setup AI tool integration (e.g., Claude Code)
-ai-bgm setup
+bgm setup
 
 # 3. Select your BGM configuration
-ai-bgm select
+bgm select
 
 # 4. Done! Music will auto-play when AI is working
 ```
@@ -37,7 +37,7 @@ pip install . --break-system-packages
 ```
 
 This installs CLI command:
-- `ai-bgm` - Unified CLI with subcommands: play, stop, select, setup
+- `bgm` - Unified CLI with subcommands: play, stop, select, setup
 
 ### System Dependencies
 
@@ -61,17 +61,17 @@ sudo dnf install python3-devel SDL2-devel
 #### 1. Select BGM Configuration
 
 ```bash
-ai-bgm select
+bgm select
 ```
 
 Interactively choose from available configurations (e.g., `default`). Selection is saved to:
-- **Linux/macOS**: `~/.config/ai-bgm/selection.json`
-- **Windows**: `%APPDATA%\ai-bgm\selection.json`
+- **Linux/macOS**: `~/.config/bgm/selection.json`
+- **Windows**: `%APPDATA%\bgm\selection.json`
 
 #### 2. Setup AI Tool Integration
 
 ```bash
-ai-bgm setup
+bgm setup
 ```
 
 Currently supports:
@@ -86,15 +86,15 @@ Currently supports:
 #### Play Work Music
 
 ```bash
-ai-bgm play work 0     # Loop indefinitely
-ai-bgm play work 3     # Play 3 times
-ai-bgm play done       # Play done music once
+bgm play work 0     # Loop indefinitely
+bgm play work 3     # Play 3 times
+bgm play done       # Play done music once
 ```
 
 #### Stop Music
 
 ```bash
-ai-bgm stop
+bgm stop
 ```
 
 Stops any playing music.
@@ -103,13 +103,13 @@ Stops any playing music.
 
 ```bash
 # Test play (single done music)
-ai-bgm play done
+bgm play done
 
 # Test work music loop (Ctrl+C to stop)
-ai-bgm play work 0
+bgm play work 0
 
 # Verify configuration
-ai-bgm select
+bgm select
 ```
 
 ### Editor Integration
@@ -120,7 +120,7 @@ Add to your `init.lua`:
 
 ```lua
 keymap.set("n", "<F10>", function()
-  vim.fn.jobstart("ai-bgm toggle")
+  vim.fn.jobstart("bgm toggle")
 end, { desc = "Toggle AI BGM" })
 ```
 
@@ -131,7 +131,7 @@ Press `F10` to toggle BGM playback/pause.
 Add to your `.vimrc`:
 
 ```vim
-nnoremap <F10> :call system('ai-bgm toggle')<CR>
+nnoremap <F10> :call system('bgm toggle')<CR>
 ```
 
 Press `F10` to toggle BGM playback/pause.
@@ -165,7 +165,7 @@ cp /path/to/your/song.mp3 aibgm/assets/sounds/my_collection/
 3. **Select your config**:
 
 ```bash
-ai-bgm-select
+bgm-select
 ```
 
 **How it works**:
@@ -199,7 +199,7 @@ cp /path/to/your/song.mp3 aibgm/assets/sounds/my_music/
 3. **Select your config**:
 
 ```bash
-ai-bgm select
+bgm select
 ```
 
 ### Music Licensing
@@ -229,7 +229,7 @@ ai-bgm select
 3. **Select your config**:
 
 ```bash
-ai-bgm select
+bgm select
 ```
 
 ### Config Structure
@@ -264,7 +264,7 @@ ai-bgm select
 ## File Structure
 
 ```
-ai-bgm/
+bgm/
 ├── aibgm/
 │   ├── cli.py             # Unified CLI entry point
 │   ├── config.json        # Built-in music configurations
@@ -286,31 +286,31 @@ ai-bgm/
 pip show pygame
 
 # Check log (Linux/macOS)
-cat ~/.config/ai-bgm/bgm_player.log
-tail -50 ~/.config/ai-bgm/bgm_player.log  # Last 50 lines
+cat ~/.config/bgm/bgm_player.log
+tail -50 ~/.config/bgm/bgm_player.log  # Last 50 lines
 
 # Windows
-type %APPDATA%\ai-bgm\bgm_player.log
+type %APPDATA%\bgm\bgm_player.log
 ```
 
 **Music won't stop?**
 ```bash
 # Force kill if needed (Linux/macOS)
-ps aux | grep ai-bgm
+ps aux | grep bgm
 kill <pid>
-rm ~/.config/ai-bgm/bgm_player.pid
+rm ~/.config/bgm/bgm_player.pid
 
 # Windows
-tasklist | findstr ai-bgm
+tasklist | findstr bgm
 taskkill /PID <pid> /F
-del %APPDATA%\ai-bgm\bgm_player.pid
+del %APPDATA%\bgm\bgm_player.pid
 ```
 
 **Log file management**
 
 The daemon log file is automatically managed:
-- **Linux/macOS**: `~/.config/ai-bgm/bgm_player.log`
-- **Windows**: `%APPDATA%\ai-bgm\bgm_player.log`
+- **Linux/macOS**: `~/.config/bgm/bgm_player.log`
+- **Windows**: `%APPDATA%\bgm\bgm_player.log`
 - Maximum 1000 lines before rotation
 - Keeps most recent 500 lines after rotation
 - No manual cleanup needed
