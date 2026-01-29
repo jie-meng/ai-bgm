@@ -56,3 +56,15 @@ aibgm/assets/sounds/*
 
 # User config extension
 config_ext.json
+
+# AI tools config
+CLAUDE.md
+GEMINI.md
+IFLOW.md
+QWEN.md
+.claude/
+.cursor/
+.gemini/
+.iflow/
+.qwen/
+.specify/
