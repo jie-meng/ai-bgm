@@ -208,12 +208,12 @@ bgm select
 
 **Included Configurations**:
 
-- **default**: Music from [魔王魂 (Maou Audio)](https://maou.audio/)
+- **default**: Music from [Maou Audio](https://maou.audio/)
   - License: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
   - Free for personal and commercial use
   - Modification and redistribution allowed with attribution
   - **DO NOT**: Use for AI music training, claim as your own, or sell on streaming platforms
-  - Attribution: "音楽：魔王魂" (Music: Maou Audio)
+  - Attribution: "Music: Maou Audio"
 
 **⚠️ Copyright Warning**:
 
