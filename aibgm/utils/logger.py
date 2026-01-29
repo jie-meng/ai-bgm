@@ -122,7 +122,7 @@ class LogManager:
             Path to bgm_player.log in user config directory
         """
         from aibgm.utils.common import get_config_dir
-        
+
         return get_config_dir() / "bgm_player.log"
 
     @staticmethod

@@ -109,7 +109,11 @@ def setup():
                     click.echo(f"  - {tool_name}")
                 sys.exit(0)
 
-            click.echo(color_text(f"\nDetected {len(installed_tools)} installed tools, starting setup...", YELLOW))
+            click.echo(
+                color_text(
+                    f"\nDetected {len(installed_tools)} installed tools, starting setup...", YELLOW
+                )
+            )
             click.echo("-" * 50)
 
             success_count = 0
@@ -142,7 +146,9 @@ def setup():
 
             if not check_tool_installed(selected_integration):
                 click.echo(color_text(f"\n{tool_name} is not installed", RED))
-                click.echo(f"Please install and run {tool_name} first. Config directory: {selected_integration.get_settings_path().parent}")
+                click.echo(
+                    f"Please install and run {tool_name} first. Config directory: {selected_integration.get_settings_path().parent}"
+                )
                 sys.exit(1)
 
             success, message = setup_integration(selected_integration)

@@ -12,6 +12,7 @@ from aibgm.commands.select import select
 from aibgm.commands.setup import setup
 from aibgm.commands.toggle import toggle
 from aibgm.commands.enable import enable
+from aibgm.commands.disable import disable
 
 
 @click.group()
@@ -27,6 +28,7 @@ cli.add_command(select)
 cli.add_command(setup)
 cli.add_command(toggle)
 cli.add_command(enable)
+cli.add_command(disable)
 
 
 if __name__ == "__main__":

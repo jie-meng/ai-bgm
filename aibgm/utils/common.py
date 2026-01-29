@@ -47,7 +47,7 @@ def get_assets_path() -> Path:
 def get_config_dir() -> Path:
     """
     Get the configuration directory path (cross-platform).
-    
+
     Returns:
         - Linux/macOS: ~/.config/ai-bgm
         - Windows: %APPDATA%/ai-bgm
@@ -63,7 +63,7 @@ def get_config_dir() -> Path:
     else:
         # Linux/macOS: use ~/.config/ai-bgm
         config_dir = Path.home() / ".config" / "ai-bgm"
-    
+
     config_dir.mkdir(parents=True, exist_ok=True)
     return config_dir
 
@@ -124,6 +124,32 @@ def is_bgm_enabled() -> bool:
             return data.get("enable", True)
     except (json.JSONDecodeError, IOError):
         return True
+
+
+def set_bgm_enable(enable: bool) -> None:
+    """
+    Set the AI BGM enable state.
+
+    Args:
+        enable: True to enable, False to disable
+    """
+    config_path = get_selection_file()
+
+    # Load existing config or create new one
+    data = {}
+    if config_path.exists():
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    # Update enable state
+    data["enable"] = enable
+
+    # Save config
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
 
 
 def load_builtin_config() -> dict:

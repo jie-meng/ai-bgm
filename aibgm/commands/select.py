@@ -27,8 +27,21 @@ def load_current_selection() -> Optional[str]:
 def save_selection(selection: str) -> None:
     """Save the selected BGM configuration to user config directory."""
     config_path = get_selection_file()
+
+    # Load existing config to preserve other settings (like 'enable')
+    data = {}
+    if config_path.exists():
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    data["selected"] = selection
+
     with open(config_path, "w", encoding="utf-8") as f:
-        json.dump({"selected": selection}, f)
+        json.dump(data, f, indent=2)
+
     click.echo(f"Selected: {selection}")
     click.echo(f"Config saved to: {config_path}")
 
