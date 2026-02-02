@@ -25,9 +25,10 @@ class GeminiIntegration(AIToolIntegration):
         Setup Gemini CLI hooks.
 
         Configures hooks for:
-        - BeforeModel: User submits prompt -> start work music
-        - AfterModel: Model response ends -> play done music
+        - BeforeAgent: User submits prompt -> start work music
+        - AfterAgent: Agent response ends -> play done music
         - SessionEnd: Session ends -> stop all music
+        - Notification: Play notification music
 
         Args:
             settings: Existing settings dictionary
@@ -50,7 +51,7 @@ class GeminiIntegration(AIToolIntegration):
             settings["hooks"] = {}
 
         # Configure hooks for AI BGM
-        settings["hooks"]["BeforeModel"] = [
+        settings["hooks"]["BeforeAgent"] = [
             {
                 "matcher": "*",
                 "hooks": [
@@ -63,7 +64,7 @@ class GeminiIntegration(AIToolIntegration):
                 ],
             }
         ]
-        settings["hooks"]["AfterModel"] = [
+        settings["hooks"]["AfterAgent"] = [
             {
                 "matcher": "*",
                 "hooks": [
@@ -85,6 +86,19 @@ class GeminiIntegration(AIToolIntegration):
                         "type": "command",
                         "command": "bgm stop",
                         "description": "Stop all music",
+                    }
+                ],
+            }
+        ]
+        settings["hooks"]["Notification"] = [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "name": "Play notification music",
+                        "type": "command",
+                        "command": "bgm play notification 0",
+                        "description": "Play notification music",
                     }
                 ],
             }
