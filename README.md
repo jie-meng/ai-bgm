@@ -1,6 +1,6 @@
-# AI BGM
+# mythril-agent-bgm
 
-AI CLI Background Music Player - A cross-platform tool that plays work music during work sessions and integrates with AI tools.
+mythril-agent-bgm - A cross-platform tool that plays work music during work sessions and integrates with AI tools.
 
 ## Quick Start
 
