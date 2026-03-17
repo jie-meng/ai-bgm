@@ -10,6 +10,7 @@ This directory contains integration modules for various AI CLI tools.
 - `cursor_agent.py` - Cursor Agent integration
 - `gemini.py` - Gemini CLI integration
 - `iflow.py` - iFlow CLI integration
+- `opencode.py` - OpenCode integration (plugin-based)
 
 ## Adding a New Integration
 
@@ -95,3 +96,4 @@ bgm setup
 - **Cursor Agent**: [Hooks Documentation](https://cursor.com/cn/docs/agent/hooks)
 - **Gemini CLI**: [Hooks Documentation](https://geminicli.com/docs/hooks/)
 - **iFlow CLI**: [Hooks Documentation](https://platform.iflow.cn/en/cli/examples/hooks#8-userpromptsubmit-hook)
+- **OpenCode**: [Plugins Documentation](https://opencode.ai/docs/plugins/) — uses a JS plugin file instead of JSON hooks

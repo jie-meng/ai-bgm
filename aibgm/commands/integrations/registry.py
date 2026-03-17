@@ -10,6 +10,7 @@ from aibgm.commands.integrations.claude import ClaudeIntegration
 from aibgm.commands.integrations.cursor_agent import CursorAgentIntegration
 from aibgm.commands.integrations.gemini import GeminiIntegration
 from aibgm.commands.integrations.iflow import IFlowIntegration
+from aibgm.commands.integrations.opencode import OpenCodeIntegration
 
 
 class IntegrationRegistry:
@@ -28,6 +29,7 @@ class IntegrationRegistry:
         CursorAgentIntegration,
         GeminiIntegration,
         IFlowIntegration,
+        OpenCodeIntegration,
     ]
 
     @classmethod

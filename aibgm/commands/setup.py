@@ -3,10 +3,8 @@
 Setup AI tool integration command for AI BGM.
 """
 
-import json
 import subprocess
 import sys
-from pathlib import Path
 from typing import List, Tuple
 
 import click
@@ -43,52 +41,22 @@ _ensure_curses()
 import curses  # noqa: E402
 
 
-def load_settings(path: Path) -> dict:
-    """Load settings from the settings file."""
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_settings(path: Path, settings: dict) -> None:
-    """Save settings to the settings file."""
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(settings, f, indent=2, ensure_ascii=False)
-
-
 def check_tool_installed(integration: AIToolIntegration) -> bool:
     """Check if an AI tool is installed by verifying its config directory exists."""
-    settings_path = integration.get_settings_path()
-    return settings_path.parent.exists()
+    return integration.get_config_dir().exists()
 
 
 def setup_integration(integration: AIToolIntegration) -> Tuple[bool, str]:
     """
     Setup a single integration.
 
+    Delegates to integration.perform_setup(), which handles
+    JSON-based and non-JSON (e.g. plugin file) integrations uniformly.
+
     Returns:
         Tuple of (success: bool, message: str)
     """
-    settings_path = integration.get_settings_path()
-    tool_id, tool_name = integration.get_tool_info()
-
-    # Check if parent directory exists
-    config_dir = settings_path.parent
-    if not config_dir.exists():
-        return (False, f"{tool_name}: Config directory not found ({config_dir})")
-
-    # Load existing settings or create new if file doesn't exist
-    if settings_path.exists():
-        settings = load_settings(settings_path)
-    else:
-        settings = {}
-
-    # Setup integration
-    settings = integration.setup_hooks(settings)
-
-    # Save updated settings
-    save_settings(settings_path, settings)
-
-    return (True, f"{tool_name}: Configured successfully [OK]")
+    return integration.perform_setup()
 
 
 def curses_multi_select(

@@ -3,6 +3,7 @@
 Base class for AI tool integrations.
 """
 
+import json
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Tuple
@@ -16,6 +17,10 @@ class AIToolIntegration(ABC):
     - get_tool_info(): Return (tool_id, tool_name)
     - get_settings_path(): Return path to settings file
     - setup_hooks(settings): Configure hooks in settings
+
+    Subclasses may override:
+    - get_config_dir(): Return the tool's config root directory for install detection
+    - perform_setup(): Customize the full setup flow (default: JSON read/write)
     """
 
     @abstractmethod
@@ -50,6 +55,42 @@ class AIToolIntegration(ABC):
             Updated settings dictionary
         """
         pass
+
+    def get_config_dir(self) -> Path:
+        """
+        Get the tool's config root directory for install detection.
+
+        Defaults to the parent of get_settings_path().
+        Override when the settings file is nested deeper than the config root.
+        """
+        return self.get_settings_path().parent
+
+    def perform_setup(self) -> Tuple[bool, str]:
+        """
+        Execute the full setup flow.
+
+        Default implementation: load JSON settings, apply hooks, save.
+        Subclasses can override for non-JSON setup (e.g. writing a plugin file).
+        """
+        settings_path = self.get_settings_path()
+        tool_id, tool_name = self.get_tool_info()
+
+        config_dir = self.get_config_dir()
+        if not config_dir.exists():
+            return (False, f"{tool_name}: Config directory not found ({config_dir})")
+
+        if settings_path.exists():
+            with open(settings_path, "r", encoding="utf-8") as f:
+                settings = json.load(f)
+        else:
+            settings = {}
+
+        settings = self.setup_hooks(settings)
+
+        with open(settings_path, "w", encoding="utf-8") as f:
+            json.dump(settings, f, indent=2, ensure_ascii=False)
+
+        return (True, f"{tool_name}: Configured successfully [OK]")
 
     def validate_settings_path(self) -> bool:
         """
