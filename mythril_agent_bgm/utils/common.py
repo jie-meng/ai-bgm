@@ -307,17 +307,6 @@ _USER_CONFIG_README_TEMPLATE = r"""# mythril-agent-bgm User Configuration
 This directory is for your personal BGM customizations.
 Files here are NOT affected by pip install/upgrade/uninstall.
 
-## Directory Structure
-
-```
-{config_dir}/
-├── config.json       # Your custom BGM configurations
-├── selection.json    # Current selected configuration (auto-created)
-├── sounds/           # Your personal audio files (place mp3 files directly here)
-├── bgm_player.pid    # Daemon PID (auto-created)
-└── bgm_player.log    # Daemon log (auto-created)
-```
-
 ## Quick Start
 
 1. Add your `.mp3` files directly into `sounds/` (no subdirectories)
@@ -331,24 +320,19 @@ Files here are NOT affected by pip install/upgrade/uninstall.
 {{
   "my_collection": {{
     "work": ["my_song.mp3", "another_song.mp3"],
-    "done": ["my_done.mp3"]
+    "done": ["done.mp3"]
   }}
 }}
 ```
 
-## Config Fields
-
-| Field | Description |
-|-------|-------------|
-| `work` | Music files to play during work (looped) |
-| `done` | Music to play when work finishes |
-| `notification` | Notification sounds |
+- `work` — music played during work (looped)
+- `done` — music played when work finishes
+- `notification` — notification sounds
 
 ## File Rules
 
 - All `.mp3` files go directly in `sounds/` — **no subdirectories**
-- Reference files by bare filename only: `"my_song.mp3"`
-- If a file in `sounds/` has the same name as a built-in file, yours takes priority
+- If your file has the same name as a built-in file, yours takes priority
 
 ## How Merge Works
 
@@ -359,13 +343,8 @@ Files here are NOT affected by pip install/upgrade/uninstall.
 
 ## Uninstall
 
-To completely remove user data:
 ```bash
-# Linux/macOS
-rm -rf ~/.config/mythril-agent-bgm
-
-# Windows
-rmdir /s /q %APPDATA%\mythril-agent-bgm
+rm -rf {config_dir}
 ```
 """
 

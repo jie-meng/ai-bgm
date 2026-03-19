@@ -11,119 +11,49 @@ pip install mythril-agent-bgm
 pip install -U mythril-agent-bgm
 ```
 
-If you encounter an `externally-managed-environment` error:
-
-```bash
-pip install mythril-agent-bgm --break-system-packages
-
-# Upgrade
-pip install -U mythril-agent-bgm --break-system-packages
-```
-
 This installs the `bgm` CLI command.
 
-## Setup and Use
+## Quick Start
 
-```bash
-# 1. On first run, a user config directory is created automatically.
-#    It includes a starter config and a README explaining how to customize.
+Running any `bgm` command for the first time auto-creates `~/.config/mythril-agent-bgm/` with a starter config.
 
-# 2. Customize your BGM by editing the config in your user directory:
-#    - Linux/macOS: ~/.config/mythril-agent-bgm/
-#    - Windows:     %APPDATA%\mythril-agent-bgm\
+1. `bgm setup` — install AI tool integration hooks (e.g. Claude, Cursor Agent)
+2. `bgm select` — pick a configuration (`default` uses built-in music; `my_collection` uses your own)
+3. `bgm enable` — enable BGM (auto-starts music when AI starts working)
 
-# 3. Add your audio files directly into sounds/ (no subdirectories)
-mkdir -p ~/.config/mythril-agent-bgm/sounds
-cp /path/to/your/song.mp3 ~/.config/mythril-agent-bgm/sounds/
+### Customize with your own audio
 
-# 4. Edit ~/.config/mythril-agent-bgm/config.json to register your collection:
-#    {
-#      "my_collection": {
-#        "work": ["song.mp3"],
-#        "done": ["complete.mp3"]
-#      }
-#    }
-
-# 5. Select your configuration
-bgm select
-
-# 6. Start playing
-bgm play work 0     # Loop indefinitely
-bgm play done       # Play once when done
-
-# 7. Setup AI tool integration
-bgm setup
-```
-
-## How It Works
-
-- **Built-in config**: comes from the installed package
-- **Your config**: lives in `~/.config/mythril-agent-bgm/config.json`
-- **Merge**: if the same config key exists in both, your fields override built-in ones
-- **Audio files**: all mp3s live directly in `sounds/` (no subdirectories); user sounds checked first, built-in second; same filename = user wins
-
-## Built-in BGM
-
-The package includes a `default` configuration with royalty-free music from [Maou Audio](https://maou.audio/).
-License: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
-
-To use the built-in config without customization:
-
-```bash
-bgm select   # choose "default"
-bgm play work 0
-```
-
-## CLI Commands
-
-```bash
-bgm play work 0         # Loop work music indefinitely
-bgm play work 3         # Play work music 3 times
-bgm play done           # Play done music once
-bgm play notification    # Play notification sound
-bgm stop                # Stop music
-bgm toggle              # Toggle play/stop
-bgm select              # Choose configuration
-bgm setup               # Setup AI tool integration
-bgm cleanup             # Remove AI tool integration
-bgm enable              # Enable BGM
-bgm disable             # Disable BGM
-```
-
-## Customize Your BGM
-
-Your config directory is created automatically on first run:
-
-| Platform | Path |
-|----------|------|
-| Linux/macOS | `~/.config/mythril-agent-bgm/` |
-| Windows | `%APPDATA%\mythril-agent-bgm\` |
-
-It contains:
-
-- `config.json` — your BGM configurations
-- `sounds/` — your personal audio files (place mp3s directly here, no subdirectories)
-- `README.md` — guide for customization
-
-See the `README.md` inside that directory for full details.
-
-### Config Structure
+1. Copy your `.mp3` files into `~/.config/mythril-agent-bgm/sounds/` (no subdirectories)
+2. Edit `~/.config/mythril-agent-bgm/config.json` and change `"my_collection"` → your files:
 
 ```json
 {
   "my_collection": {
-    "work": ["default_boss.mp3", "default_castle.mp3", ...],
-    "done": ["default_congratulations.mp3"],
-    "notification": ["default_pause.mp3"]
+    "work": ["my_song.mp3", "another.mp3"],
+    "done": ["done.mp3"]
   }
 }
 ```
 
-### Audio File Rules
+3. Run `bgm select` and pick `my_collection`
 
-- Place all `.mp3` files directly in `sounds/` — subdirectories are not recognized
-- Reference files by bare filename: `"song.mp3"`
-- If your file has the same name as a built-in file, yours takes priority
+Rename `my_collection` to anything you like — it's just a key.
+
+## CLI Commands
+
+```bash
+bgm play work 0          # Loop work music indefinitely
+bgm play work 3          # Play work music 3 times
+bgm play done            # Play done music once
+bgm play notification    # Play notification sound
+bgm stop                 # Stop music
+bgm toggle               # Toggle play/stop
+bgm select               # Choose configuration
+bgm setup                # Setup AI tool integration
+bgm cleanup              # Remove AI tool integration
+bgm enable               # Enable BGM
+bgm disable              # Disable BGM
+```
 
 ## Editor Integration
 
@@ -169,7 +99,3 @@ rm -rf ~/.config/mythril-agent-bgm
 ## Development
 
 See [docs/Dev.md](docs/Dev.md) for the development guide.
-
-## License
-
-MIT
