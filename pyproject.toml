@@ -26,15 +26,15 @@ classifiers = [
 
 keywords = ["ai", "background-music", "bgm", "productivity", "cli"]
 
-[project.urls]
-Homepage = "https://github.com/jie-meng/mythril-agent-bgm"
-Repository = "https://github.com/jie-meng/mythril-agent-bgm"
-Issues = "https://github.com/jie-meng/mythril-agent-bgm/issues"
-
 dependencies = [
     "pygame>=2.6.1",
     "click>=8.3.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/jie-meng/mythril-agent-bgm"
+Repository = "https://github.com/jie-meng/mythril-agent-bgm"
+Issues = "https://github.com/jie-meng/mythril-agent-bgm/issues"
 
 [project.scripts]
 bgm = "aibgm.cli:cli"
