@@ -55,6 +55,7 @@ Code should be open for extension, closed for modification. Add new platform sup
 | Path | Purpose |
 |------|---------|
 | `mythril_agent_bgm/config.json` | BGM configurations |
+| `mythril_agent_bgm/sounds/` | Built-in audio files (mp3s directly, no subdirs) |
 | `mythril_agent_bgm/cli.py` | Unified CLI entry point |
 | `main.py` | Local development entry (not packaged) |
 | `mythril_agent_bgm/utils/platform_utils.py` | Platform detection utilities |
@@ -85,11 +86,11 @@ See source files for detailed usage (docstrings and type hints).
 
 ```bash
 # Built-in (repo) config:
-# 1. Add files to mythril_agent_bgm/assets/sounds/<name>/
+# 1. Add files directly to mythril_agent_bgm/sounds/ (no subdirs, use default_ prefix for built-ins)
 # 2. Update mythril_agent_bgm/config.json
 
 # User-local custom config:
-# 1. Add files to ~/.config/mythril-agent-bgm/sounds/<name>/
+# 1. Add files directly to ~/.config/mythril-agent-bgm/sounds/ (no subdirs)
 # 2. Update ~/.config/mythril-agent-bgm/config.json
 {
   "<name>": {
@@ -98,6 +99,7 @@ See source files for detailed usage (docstrings and type hints).
   }
 }
 # 3. Test: bgm select
+# Note: if a user file has the same name as a built-in file, user file wins
 ```
 
 ### Add CLI Option

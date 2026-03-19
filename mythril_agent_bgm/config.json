@@ -1,26 +1,26 @@
 {
   "default": {
     "work": [
-      "boss.mp3",
-      "castle.mp3",
-      "desert.mp3",
-      "forest.mp3",
-      "maou_game_boss06.mp3",
-      "maou_game_boss07.mp3",
-      "maou_game_boss08.mp3",
-      "maou_game_lastboss03.mp3",
-      "maou_game_lastboss04.mp3",
-      "maou_game_medley02.mp3",
-      "mountain.mp3",
-      "pause.mp3",
-      "snow.mp3",
-      "village.mp3"
+      "default_boss.mp3",
+      "default_castle.mp3",
+      "default_desert.mp3",
+      "default_forest.mp3",
+      "default_battle_a.mp3",
+      "default_battle_b.mp3",
+      "default_battle_c.mp3",
+      "default_lastboss_a.mp3",
+      "default_lastboss_b.mp3",
+      "default_medley.mp3",
+      "default_mountain.mp3",
+      "default_pause.mp3",
+      "default_snow.mp3",
+      "default_village.mp3"
     ],
     "done": [
-      "congratulations.mp3"
+      "default_congratulations.mp3"
     ],
     "notification": [
-      "pause.mp3"
+      "default_pause.mp3"
     ]
   }
 }

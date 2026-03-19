@@ -1,4 +1,3 @@
 include mythril_agent_bgm/*.py
 include mythril_agent_bgm/*.json
-recursive-include mythril_agent_bgm/assets *.mp3
-recursive-include mythril_agent_bgm/assets/hooks *.sh
+recursive-include mythril_agent_bgm/sounds *.mp3

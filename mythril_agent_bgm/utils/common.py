@@ -32,13 +32,9 @@ def get_builtin_sounds_dir() -> Path:
 
         # For Python 3.9+
         pkg_path = resources.files("mythril_agent_bgm")
-        candidate_paths = [
-            Path(str(pkg_path / "sounds")),
-            Path(str(pkg_path / "assets" / "sounds")),
-        ]
-        for sounds_dir in candidate_paths:
-            if sounds_dir.exists():
-                return sounds_dir
+        sounds_dir = Path(str(pkg_path / "sounds"))
+        if sounds_dir.exists():
+            return sounds_dir
     except (ImportError, AttributeError):
         pass
 
@@ -46,9 +42,7 @@ def get_builtin_sounds_dir() -> Path:
     script_dir = Path(__file__).parent.parent
     fallback_paths = [
         script_dir / "sounds",
-        script_dir / "assets" / "sounds",
         Path.cwd() / "mythril_agent_bgm" / "sounds",
-        Path.cwd() / "mythril_agent_bgm" / "assets" / "sounds",
     ]
     for sounds_dir in fallback_paths:
         if sounds_dir.exists():
@@ -279,16 +273,18 @@ def load_builtin_config() -> dict:
 
 
 def get_audio_candidate_paths(selection: str, file_name: str) -> list[Path]:
-    """Build candidate paths for an audio file in user and built-in directories."""
+    """Build candidate paths for an audio file in user and built-in directories.
+
+    Audio files are stored directly in the sounds/ directory (no subdirectories).
+    User sounds override built-in sounds when filenames match.
+    """
     builtin_sounds = get_builtin_sounds_dir()
     user_sounds = get_user_sounds_dir()
 
-    if "/" in file_name:
-        relative_path = Path(file_name)
-    else:
-        relative_path = Path(selection) / file_name
+    # Only use the bare filename; subdirectories are not supported
+    bare_name = Path(file_name).name
 
-    return [user_sounds / relative_path, builtin_sounds / relative_path]
+    return [user_sounds / bare_name, builtin_sounds / bare_name]
 
 
 def resolve_audio_file_path(selection: str, file_name: str) -> Path | None:
@@ -306,8 +302,7 @@ def save_pid() -> None:
         f.write(str(os.getpid()))
 
 
-_USER_CONFIG_README_TEMPLATE = r"""\
-# mythril-agent-bgm User Configuration
+_USER_CONFIG_README_TEMPLATE = r"""# mythril-agent-bgm User Configuration
 
 This directory is for your personal BGM customizations.
 Files here are NOT affected by pip install/upgrade/uninstall.
@@ -318,17 +313,15 @@ Files here are NOT affected by pip install/upgrade/uninstall.
 {config_dir}/
 ├── config.json       # Your custom BGM configurations
 ├── selection.json    # Current selected configuration (auto-created)
-├── sounds/           # Your personal audio files
-│   └── <your-collection>/
-│       └── your_song.mp3
+├── sounds/           # Your personal audio files (place mp3 files directly here)
 ├── bgm_player.pid    # Daemon PID (auto-created)
 └── bgm_player.log    # Daemon log (auto-created)
 ```
 
 ## Quick Start
 
-1. Add your audio files under `sounds/<your-collection>/`
-2. Edit `config.json` (see example below)
+1. Add your `.mp3` files directly into `sounds/` (no subdirectories)
+2. Edit `config.json` and reference files by bare filename
 3. Run `bgm select` to choose your configuration
 4. Run `bgm play work 0` to start
 
@@ -337,8 +330,8 @@ Files here are NOT affected by pip install/upgrade/uninstall.
 ```json
 {{
   "my_collection": {{
-    "work": ["song1.mp3", "song2.mp3"],
-    "done": ["complete.mp3"]
+    "work": ["my_song.mp3", "another_song.mp3"],
+    "done": ["my_done.mp3"]
   }}
 }}
 ```
@@ -351,18 +344,18 @@ Files here are NOT affected by pip install/upgrade/uninstall.
 | `done` | Music to play when work finishes |
 | `notification` | Notification sounds |
 
-## File Path Formats
+## File Rules
 
-- **Simple name**: `song.mp3` → reads from `sounds/<config-name>/song.mp3`
-- **Cross-folder**: `other_collection/song.mp3` → reads from `sounds/other_collection/song.mp3`
-- **Built-in reference**: `default/boss.mp3` → reads from package built-in sounds
+- All `.mp3` files go directly in `sounds/` — **no subdirectories**
+- Reference files by bare filename only: `"my_song.mp3"`
+- If a file in `sounds/` has the same name as a built-in file, yours takes priority
 
 ## How Merge Works
 
 - Built-in config: package `mythril_agent_bgm/config.json`
 - Your config: `{config_dir}/config.json`
 - Same config key: your fields override built-in fields
-- Audio files: user sounds checked first, then built-in sounds
+- Audio files: user `sounds/` checked first, then built-in sounds
 
 ## Uninstall
 
@@ -398,9 +391,24 @@ def ensure_user_config_dir() -> None:
     if not user_config_file.exists():
         starter_config = {
             "my_collection": {
-                "work": ["song1.mp3"],
-                "done": ["complete.mp3"],
-                "notification": ["alert.mp3"],
+                "work": [
+                    "default_boss.mp3",
+                    "default_castle.mp3",
+                    "default_desert.mp3",
+                    "default_forest.mp3",
+                    "default_battle_a.mp3",
+                    "default_battle_b.mp3",
+                    "default_battle_c.mp3",
+                    "default_lastboss_a.mp3",
+                    "default_lastboss_b.mp3",
+                    "default_medley.mp3",
+                    "default_mountain.mp3",
+                    "default_pause.mp3",
+                    "default_snow.mp3",
+                    "default_village.mp3",
+                ],
+                "done": ["default_congratulations.mp3"],
+                "notification": ["default_pause.mp3"],
             }
         }
         user_config_file.write_text(

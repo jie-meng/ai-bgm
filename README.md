@@ -32,9 +32,9 @@ This installs the `bgm` CLI command.
 #    - Linux/macOS: ~/.config/mythril-agent-bgm/
 #    - Windows:     %APPDATA%\mythril-agent-bgm\
 
-# 3. Add your audio files under sounds/<your-collection>/
-mkdir -p ~/.config/mythril-agent-bgm/sounds/my_collection
-cp /path/to/your/song.mp3 ~/.config/mythril-agent-bgm/sounds/my_collection/
+# 3. Add your audio files directly into sounds/ (no subdirectories)
+mkdir -p ~/.config/mythril-agent-bgm/sounds
+cp /path/to/your/song.mp3 ~/.config/mythril-agent-bgm/sounds/
 
 # 4. Edit ~/.config/mythril-agent-bgm/config.json to register your collection:
 #    {
@@ -60,7 +60,7 @@ bgm setup
 - **Built-in config**: comes from the installed package
 - **Your config**: lives in `~/.config/mythril-agent-bgm/config.json`
 - **Merge**: if the same config key exists in both, your fields override built-in ones
-- **Audio files**: checked in your user sounds first, then in built-in sounds
+- **Audio files**: all mp3s live directly in `sounds/` (no subdirectories); user sounds checked first, built-in second; same filename = user wins
 
 ## Built-in BGM
 
@@ -102,7 +102,7 @@ Your config directory is created automatically on first run:
 It contains:
 
 - `config.json` — your BGM configurations
-- `sounds/` — your personal audio files
+- `sounds/` — your personal audio files (place mp3s directly here, no subdirectories)
 - `README.md` — guide for customization
 
 See the `README.md` inside that directory for full details.
@@ -112,18 +112,18 @@ See the `README.md` inside that directory for full details.
 ```json
 {
   "my_collection": {
-    "work": ["song1.mp3", "song2.mp3"],
-    "done": ["complete.mp3"],
-    "notification": ["alert.mp3"]
+    "work": ["default_boss.mp3", "default_castle.mp3", ...],
+    "done": ["default_congratulations.mp3"],
+    "notification": ["default_pause.mp3"]
   }
 }
 ```
 
-### File Path Formats
+### Audio File Rules
 
-- `song.mp3` → `sounds/<config-name>/song.mp3`
-- `other/song.mp3` → `sounds/other/song.mp3`
-- `default/boss.mp3` → built-in package sounds
+- Place all `.mp3` files directly in `sounds/` — subdirectories are not recognized
+- Reference files by bare filename: `"song.mp3"`
+- If your file has the same name as a built-in file, yours takes priority
 
 ## Editor Integration
 

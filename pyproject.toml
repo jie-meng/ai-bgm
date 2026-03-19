@@ -44,6 +44,9 @@ include = ["mythril_agent_bgm*"]
 exclude = ["tests", "tests.*"]
 namespaces = false
 
+[tool.setuptools.package-data]
+mythril_agent_bgm = ["*.json", "sounds/*.mp3"]
+
 [tool.black]
 line-length = 100
 target-version = ['py39', 'py310', 'py311', 'py312']
