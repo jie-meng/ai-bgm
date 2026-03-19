@@ -51,11 +51,8 @@ tmp/
 temp/
 
 # Keep only default in assets/sounds
-aibgm/assets/sounds/*
-!aibgm/assets/sounds/default/
-
-# User config extension
-config_ext.json
+mythril_agent_bgm/assets/sounds/*
+!mythril_agent_bgm/assets/sounds/default/
 
 # AI tools config
 CLAUDE.md

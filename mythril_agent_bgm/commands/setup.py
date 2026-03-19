@@ -9,10 +9,10 @@ from typing import List, Tuple
 
 import click
 
-from aibgm.commands.integrations import AIToolIntegration
-from aibgm.commands.integrations.registry import IntegrationRegistry
-from aibgm.utils.colors import BOLD, GREEN, RED, YELLOW, color_text
-from aibgm.utils.platform_utils import is_windows
+from mythril_agent_bgm.commands.integrations import AIToolIntegration
+from mythril_agent_bgm.commands.integrations.registry import IntegrationRegistry
+from mythril_agent_bgm.utils.colors import BOLD, GREEN, RED, YELLOW, color_text
+from mythril_agent_bgm.utils.platform_utils import is_windows
 
 
 def _ensure_curses() -> None:
@@ -114,9 +114,7 @@ def curses_multi_select(
         marker = "[x]" if all_selected else "[ ]"
         attr = curses.A_REVERSE if cursor == 0 else 0
         try:
-            stdscr.addstr(
-                row, 0, f"  {marker}  {all_item}", attr | curses.color_pair(1)
-            )
+            stdscr.addstr(row, 0, f"  {marker}  {all_item}", attr | curses.color_pair(1))
         except curses.error:
             pass
 
@@ -167,17 +165,13 @@ def curses_multi_select(
             if cursor == 0:
                 enabled_sel = [s for i, s in enumerate(selected) if i not in disabled]
                 new_val = not (bool(enabled_sel) and all(enabled_sel))
-                selected = [
-                    new_val if i not in disabled else False for i in range(len(items))
-                ]
+                selected = [new_val if i not in disabled else False for i in range(len(items))]
             elif cursor - 1 not in disabled:
                 selected[cursor - 1] = not selected[cursor - 1]
         elif key == ord("a"):
             enabled_sel = [s for i, s in enumerate(selected) if i not in disabled]
             new_val = not (bool(enabled_sel) and all(enabled_sel))
-            selected = [
-                new_val if i not in disabled else False for i in range(len(items))
-            ]
+            selected = [new_val if i not in disabled else False for i in range(len(items))]
         elif key in (curses.KEY_ENTER, 10, 13):
             return [i for i, s in enumerate(selected) if s and i not in disabled]
         elif key in (ord("q"), 27):
@@ -187,14 +181,14 @@ def curses_multi_select(
 def select_tools_interactive(integrations: List[AIToolIntegration]) -> List[int] | None:
     """Launch curses UI to select AI tools. Returns selected indices or None."""
     uninstalled = {
-        i
-        for i, integration in enumerate(integrations)
-        if not check_tool_installed(integration)
+        i for i, integration in enumerate(integrations) if not check_tool_installed(integration)
     }
     items = [
-        f"{integration.get_tool_info()[1]}  (not installed)"
-        if i in uninstalled
-        else integration.get_tool_info()[1]
+        (
+            f"{integration.get_tool_info()[1]}  (not installed)"
+            if i in uninstalled
+            else integration.get_tool_info()[1]
+        )
         for i, integration in enumerate(integrations)
     ]
     preselected = [i not in uninstalled for i in range(len(items))]
@@ -236,9 +230,7 @@ def setup():
         click.echo("No tools selected. Aborted.")
         sys.exit(0)
 
-    click.echo(
-        color_text(f"\nSelected {len(tool_indices)} tool(s), starting setup...", YELLOW)
-    )
+    click.echo(color_text(f"\nSelected {len(tool_indices)} tool(s), starting setup...", YELLOW))
     click.echo("-" * 50)
 
     success_count = 0

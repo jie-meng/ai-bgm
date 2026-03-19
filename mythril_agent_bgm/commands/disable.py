@@ -5,7 +5,7 @@ Disable command for AI BGM.
 
 import click
 
-from aibgm.utils.common import set_bgm_enable
+from mythril_agent_bgm.utils.common import set_bgm_enable
 
 
 @click.command()

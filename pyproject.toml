@@ -8,14 +8,13 @@ version = "0.1.0"
 description = "AI CLI Background Music Player - Plays work music in loop and done music when finished"
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Jie Meng", email = "jmengx@gmail.com"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -37,11 +36,13 @@ Repository = "https://github.com/jie-meng/mythril-agent-bgm"
 Issues = "https://github.com/jie-meng/mythril-agent-bgm/issues"
 
 [project.scripts]
-bgm = "aibgm.cli:cli"
+bgm = "mythril_agent_bgm.cli:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["mythril_agent_bgm*"]
 exclude = ["tests", "tests.*"]
+namespaces = false
 
 [tool.black]
 line-length = 100

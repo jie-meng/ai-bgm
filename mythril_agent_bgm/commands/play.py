@@ -8,13 +8,11 @@ import sys
 import time
 import subprocess
 import random
-from pathlib import Path
 
 import click
 import pygame
 
-from aibgm.utils.common import (
-    get_assets_path,
+from mythril_agent_bgm.utils.common import (
     get_pid_file,
     get_lock_file,
     load_selection,
@@ -22,10 +20,12 @@ from aibgm.utils.common import (
     save_pid,
     cleanup_pid,
     is_bgm_enabled,
+    get_audio_candidate_paths,
+    resolve_audio_file_path,
 )
-from aibgm.utils.logger import LogManager
-from aibgm.utils.process import ProcessManager, FileLock, setup_signal_handlers
-from aibgm.utils.platform_utils import is_windows
+from mythril_agent_bgm.utils.logger import LogManager
+from mythril_agent_bgm.utils.process import ProcessManager, FileLock, setup_signal_handlers
+from mythril_agent_bgm.utils.platform_utils import is_windows
 
 
 def kill_existing_process() -> bool:
@@ -62,14 +62,13 @@ def kill_existing_process() -> bool:
         return False
 
 
-def play_music(selection: str, music_type: str, assets_path: Path, repeat: int = 1) -> None:
+def play_music(selection: str, music_type: str, repeat: int = 1) -> None:
     """
     Play music based on selection and type.
 
     Args:
         selection: The selected configuration name (e.g., 'default', 'maou')
         music_type: Either 'work', 'done', or 'notification'
-        assets_path: Path to the assets/sounds directory
         repeat: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
     print(
@@ -104,22 +103,17 @@ def play_music(selection: str, music_type: str, assets_path: Path, repeat: int =
     # Randomly select one file
     selected_file = random.choice(files)
 
-    # Build the full path - support folder/file.mp3 format for cross-folder references
-    if "/" in selected_file:
-        # Explicit folder path: folder/file.mp3
-        folder_name, file_name = selected_file.split("/", 1)
-        full_path = assets_path / folder_name / file_name
-    else:
-        # Relative path: use selection as folder (backward compatible)
-        full_path = assets_path / selection / selected_file
+    full_path = resolve_audio_file_path(selection, selected_file)
 
-    if not full_path.exists():
+    if full_path is None:
+        checked_paths = get_audio_candidate_paths(selection, selected_file)
+        checked_paths_str = ", ".join(str(path) for path in checked_paths)
         click.echo(
-            f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error: File not found: {full_path}",
+            f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error: File not found: {selected_file}",
             err=True,
         )
         click.echo(
-            f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Please ensure the file exists in: {assets_path / selection}",
+            f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Checked paths: {checked_paths_str}",
             err=True,
         )
         cleanup_pid()
@@ -300,25 +294,18 @@ def run_player_daemon(music_type: str, loop: int) -> None:
     # Load the selected configuration
     selection = load_selection()
 
-    # Get the assets path
-    assets_path = get_assets_path()
-
-    if not assets_path.exists():
-        print(
-            f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error: Assets directory not found: {assets_path}"
-        )
-        cleanup_pid()
-        sys.exit(1)
-
     # Play the music
-    play_music(selection, music_type, assets_path, loop)
+    play_music(selection, music_type, loop)
 
 
 @click.command()
 @click.argument("music_type", type=click.Choice(["work", "done", "notification"]))
 @click.argument("loop", type=int, default=1, required=False)
 @click.option(
-    "--daemon", is_flag=True, hidden=True, help="Run as daemon process (internal use only)"
+    "--daemon",
+    is_flag=True,
+    hidden=True,
+    help="Run as daemon process (internal use only)",
 )
 def play(music_type: str, loop: int, daemon: bool):
     """Play music based on saved configuration.

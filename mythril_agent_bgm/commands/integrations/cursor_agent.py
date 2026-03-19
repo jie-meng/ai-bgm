@@ -6,7 +6,7 @@ Cursor Agent integration for AI BGM.
 from pathlib import Path
 from typing import Tuple
 
-from aibgm.commands.integrations import AIToolIntegration
+from mythril_agent_bgm.commands.integrations import AIToolIntegration
 
 
 class CursorAgentIntegration(AIToolIntegration):

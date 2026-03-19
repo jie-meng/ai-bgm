@@ -8,9 +8,9 @@ from pathlib import Path
 
 import click
 
-from aibgm.utils.common import get_pid_file
-from aibgm.commands.stop import kill_existing_player
-from aibgm.commands.play import start_background_player
+from mythril_agent_bgm.utils.common import get_pid_file
+from mythril_agent_bgm.commands.stop import kill_existing_player
+from mythril_agent_bgm.commands.play import start_background_player
 
 
 def is_bgm_playing() -> bool:

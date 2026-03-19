@@ -8,9 +8,9 @@ from pathlib import Path
 
 import click
 
-from aibgm.utils.common import get_pid_file, get_lock_file
-from aibgm.utils.process import ProcessManager, FileLock
-from aibgm.utils.platform_utils import is_unix
+from mythril_agent_bgm.utils.common import get_pid_file, get_lock_file
+from mythril_agent_bgm.utils.process import ProcessManager, FileLock
+from mythril_agent_bgm.utils.platform_utils import is_unix
 
 
 def kill_existing_player() -> bool:

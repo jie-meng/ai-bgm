@@ -5,12 +5,12 @@ Registry for AI tool integrations.
 
 from typing import List, Type
 
-from aibgm.commands.integrations import AIToolIntegration
-from aibgm.commands.integrations.claude import ClaudeIntegration
-from aibgm.commands.integrations.cursor_agent import CursorAgentIntegration
-from aibgm.commands.integrations.gemini import GeminiIntegration
-from aibgm.commands.integrations.iflow import IFlowIntegration
-from aibgm.commands.integrations.opencode import OpenCodeIntegration
+from mythril_agent_bgm.commands.integrations import AIToolIntegration
+from mythril_agent_bgm.commands.integrations.claude import ClaudeIntegration
+from mythril_agent_bgm.commands.integrations.cursor_agent import CursorAgentIntegration
+from mythril_agent_bgm.commands.integrations.gemini import GeminiIntegration
+from mythril_agent_bgm.commands.integrations.iflow import IFlowIntegration
+from mythril_agent_bgm.commands.integrations.opencode import OpenCodeIntegration
 
 
 class IntegrationRegistry:
@@ -18,7 +18,7 @@ class IntegrationRegistry:
     Registry for managing AI tool integrations.
 
     To add a new integration:
-    1. Create a new file in aibgm/commands/integrations/
+    1. Create a new file in mythril_agent_bgm/commands/integrations/
     2. Implement AIToolIntegration abstract class
     3. Register it in _integrations list below
     """

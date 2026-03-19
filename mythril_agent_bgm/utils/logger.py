@@ -121,7 +121,7 @@ class LogManager:
         Returns:
             Path to bgm_player.log in user config directory
         """
-        from aibgm.utils.common import get_config_dir
+        from mythril_agent_bgm.utils.common import get_config_dir
 
         return get_config_dir() / "bgm_player.log"
 

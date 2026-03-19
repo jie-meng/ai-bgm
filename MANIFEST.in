@@ -1,4 +1,4 @@
-include aibgm/*.py
-include aibgm/*.json
-recursive-include aibgm/assets *.mp3
-recursive-include aibgm/assets/hooks *.sh
+include mythril_agent_bgm/*.py
+include mythril_agent_bgm/*.json
+recursive-include mythril_agent_bgm/assets *.mp3
+recursive-include mythril_agent_bgm/assets/hooks *.sh

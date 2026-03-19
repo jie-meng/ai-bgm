@@ -1,184 +1,133 @@
 # mythril-agent-bgm
 
-mythril-agent-bgm - A cross-platform tool that plays work music during work sessions and integrates with AI tools.
+A cross-platform CLI tool that plays background music during AI-assisted work sessions and integrates with AI tools.
 
-## Quick Start
-
-Choose the path that fits your needs:
-
-### Option A: Use built-in BGM (install from PyPI)
-
-Use the package as-is with the built-in `default` music set.
+## Install
 
 ```bash
-# 1. Install from PyPI (new install)
 pip install mythril-agent-bgm
 
-# Upgrade an existing PyPI installation
-pip install -U mythril-agent-bgm
-
-# 2. Select configuration (default is built in)
-bgm select
-
-# 3. Setup AI tool integration (e.g., Claude Code)
-bgm setup
-```
-
-### Option B: Customize your own BGM (clone + local install)
-
-If you want to add your own audio and configs, clone this repository and install locally.
-
-```bash
-# 1. Clone
-git clone https://github.com/jie-meng/mythril-agent-bgm.git
-cd mythril-agent-bgm
-
-# 2. Add custom audio/config (see "Customize Your Own BGM")
-
-# 3. Install from local source
-pip install .
-
-# 4. Select your config and setup integration
-bgm select
-bgm setup
-```
-
-## Installation
-
-### Prerequisites
-
-- Python 3.9+
-- pip
-
-### Install
-
-#### Mode A: Install from PyPI (built-in BGM)
-
-```bash
-# New install
-pip install mythril-agent-bgm
-
-# Upgrade existing install
+# Upgrade
 pip install -U mythril-agent-bgm
 ```
 
-If you only want to upgrade from PyPI:
+If you encounter an `externally-managed-environment` error:
 
 ```bash
-pip install -U mythril-agent-bgm
-```
-
-#### Mode B: Install from local clone (for custom BGM)
-
-```bash
-git clone https://github.com/jie-meng/mythril-agent-bgm.git
-cd mythril-agent-bgm
-pip install .
-```
-
-If you encounter an `externally-managed-environment` error, install with:
-
-```bash
-# PyPI mode
 pip install mythril-agent-bgm --break-system-packages
+
+# Upgrade
 pip install -U mythril-agent-bgm --break-system-packages
-
-# Local clone mode
-pip install . --break-system-packages
 ```
 
-Use **Mode B** when you need to add your own audio files or edit BGM configs.
+This installs the `bgm` CLI command.
 
-This installs CLI command:
-- `bgm` - Unified CLI with subcommands: play, stop, select, setup, cleanup
-
-### System Dependencies
-
-**macOS**: None required.
-
-**Linux**:
-```bash
-# Ubuntu/Debian
-sudo apt-get install python3-dev libsdl2-dev
-
-# Fedora
-sudo dnf install python3-devel SDL2-devel
-```
-
-**Windows**: None required.
-
-## Usage
-
-### First Time Setup
-
-#### 1. Select BGM Configuration
+## Setup and Use
 
 ```bash
+# 1. On first run, a user config directory is created automatically.
+#    It includes a starter config and a README explaining how to customize.
+
+# 2. Customize your BGM by editing the config in your user directory:
+#    - Linux/macOS: ~/.config/mythril-agent-bgm/
+#    - Windows:     %APPDATA%\mythril-agent-bgm\
+
+# 3. Add your audio files under sounds/<your-collection>/
+mkdir -p ~/.config/mythril-agent-bgm/sounds/my_collection
+cp /path/to/your/song.mp3 ~/.config/mythril-agent-bgm/sounds/my_collection/
+
+# 4. Edit ~/.config/mythril-agent-bgm/config.json to register your collection:
+#    {
+#      "my_collection": {
+#        "work": ["song.mp3"],
+#        "done": ["complete.mp3"]
+#      }
+#    }
+
+# 5. Select your configuration
 bgm select
-```
 
-Interactively choose from available configurations (e.g., `default`). Selection is saved to:
-- **Linux/macOS**: `~/.config/bgm/selection.json`
-- **Windows**: `%APPDATA%\bgm\selection.json`
+# 6. Start playing
+bgm play work 0     # Loop indefinitely
+bgm play done       # Play once when done
 
-#### 2. Setup AI Tool Integration
-
-```bash
+# 7. Setup AI tool integration
 bgm setup
 ```
 
-Currently supports:
+## How It Works
 
-- **Claude Code**
-- **Cursor** (Cursor Hooks Notification not yet supported)
-- **Gemini CLI**
-- **iFlow CLI**
-- **OpenCode**
+- **Built-in config**: comes from the installed package
+- **Your config**: lives in `~/.config/mythril-agent-bgm/config.json`
+- **Merge**: if the same config key exists in both, your fields override built-in ones
+- **Audio files**: checked in your user sounds first, then in built-in sounds
 
-#### 3. Cleanup AI Tool Integration (reverse of setup)
+## Built-in BGM
 
-```bash
-bgm cleanup
-```
+The package includes a `default` configuration with royalty-free music from [Maou Audio](https://maou.audio/).
+License: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
 
-Removes BGM hooks/plugins from AI tools. Interactively select which tools to clean up.
-
-### Manual Commands
-
-#### Play Work Music
+To use the built-in config without customization:
 
 ```bash
-bgm play work 0     # Loop indefinitely
-bgm play work 3     # Play 3 times
-bgm play done       # Play done music once
-```
-
-#### Stop Music
-
-```bash
-bgm stop
-```
-
-Stops any playing music.
-
-### Test BGM
-
-```bash
-# Test play (single done music)
-bgm play done
-
-# Test work music loop (Ctrl+C to stop)
+bgm select   # choose "default"
 bgm play work 0
-
-# Verify configuration
-bgm select
 ```
 
-### Editor Integration
+## CLI Commands
 
-#### Neovim
+```bash
+bgm play work 0         # Loop work music indefinitely
+bgm play work 3         # Play work music 3 times
+bgm play done           # Play done music once
+bgm play notification    # Play notification sound
+bgm stop                # Stop music
+bgm toggle              # Toggle play/stop
+bgm select              # Choose configuration
+bgm setup               # Setup AI tool integration
+bgm cleanup             # Remove AI tool integration
+bgm enable              # Enable BGM
+bgm disable             # Disable BGM
+```
 
-Add to your `init.lua`:
+## Customize Your BGM
+
+Your config directory is created automatically on first run:
+
+| Platform | Path |
+|----------|------|
+| Linux/macOS | `~/.config/mythril-agent-bgm/` |
+| Windows | `%APPDATA%\mythril-agent-bgm\` |
+
+It contains:
+
+- `config.json` — your BGM configurations
+- `sounds/` — your personal audio files
+- `README.md` — guide for customization
+
+See the `README.md` inside that directory for full details.
+
+### Config Structure
+
+```json
+{
+  "my_collection": {
+    "work": ["song1.mp3", "song2.mp3"],
+    "done": ["complete.mp3"],
+    "notification": ["alert.mp3"]
+  }
+}
+```
+
+### File Path Formats
+
+- `song.mp3` → `sounds/<config-name>/song.mp3`
+- `other/song.mp3` → `sounds/other/song.mp3`
+- `default/boss.mp3` → built-in package sounds
+
+## Editor Integration
+
+### Neovim
 
 ```lua
 keymap.set("n", "<F10>", function()
@@ -186,204 +135,41 @@ keymap.set("n", "<F10>", function()
 end, { desc = "Toggle AI BGM" })
 ```
 
-Press `F10` to toggle BGM playback/pause.
-
-#### Vim
-
-Add to your `.vimrc`:
+### Vim
 
 ```vim
 nnoremap <F10> :call system('bgm toggle')<CR>
 ```
 
-Press `F10` to toggle BGM playback/pause.
-
-## Customize Your Own BGM (Clone Mode)
-
-This section is for **Option B (clone + local install)**.
-
-Workflow:
-
-1. Add audio files under `aibgm/assets/sounds/<your-config>/`
-2. Update config (`aibgm/config_ext.json` or `aibgm/config.json`)
-3. Reinstall from your clone: `pip install .`
-4. Run `bgm select` and choose your config
-
-### Add Custom Music
-
-#### Method 1: Using config_ext.json (Recommended for copyrighted music)
-
-For copyrighted music that should NOT be committed to the repository:
-
-1. **Create a music directory** in `aibgm/assets/sounds/<your-config>/`
-
-```bash
-mkdir -p aibgm/assets/sounds/my_collection
-cp /path/to/your/song.mp3 aibgm/assets/sounds/my_collection/
-```
-
-2. **Create or edit `aibgm/config_ext.json`** (this file is ignored by git):
-
-```json
-{
-  "my_collection": {
-    "work": ["song1.mp3", "song2.mp3"],
-    "done": ["complete.mp3"]
-  }
-}
-```
-
-3. **Select your config**:
-
-```bash
-bgm select
-```
-
-**How it works**:
-- `config.json` contains built-in configurations (default, maou)
-- `config_ext.json` contains your custom configurations
-- If a key exists in both files, `config_ext.json` takes precedence
-- `config_ext.json` is gitignored, so your copyrighted music won't be uploaded
-
-#### Method 2: Using config.json (For royalty-free music only)
-
-For royalty-free music that can be shared:
-
-1. **Place audio files** in `aibgm/assets/sounds/<your-config>/`
-
-```bash
-mkdir -p aibgm/assets/sounds/my_music
-cp /path/to/your/song.mp3 aibgm/assets/sounds/my_music/
-```
-
-2. **Update config.json**:
-
-```json
-{
-  "my_music": {
-    "work": ["song1.mp3", "song2.mp3"],
-    "done": ["complete.mp3"]
-  }
-}
-```
-
-3. **Select your config**:
-
-```bash
-bgm select
-```
-
-### Music Licensing
-
-**IMPORTANT**: Only music that is free for commercial use or royalty-free should be committed to this repository.
-
-**Included Configurations**:
-
-- **default**: Music from [Maou Audio](https://maou.audio/)
-  - License: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
-  - Free for personal and commercial use
-  - Modification and redistribution allowed with attribution
-  - **DO NOT**: Use for AI music training, claim as your own, or sell on streaming platforms
-  - Attribution: "Music: Maou Audio"
-
-**⚠️ Copyright Warning**:
-
-- Do NOT commit copyrighted music files to this repository
-- Only add music that you have explicit permission to use and distribute
-- **For copyrighted music**: Use `config_ext.json` and custom directories in `assets/sounds/`
-  - These are automatically gitignored and won't be uploaded
-  - Perfect for personal music collections
-  - Example: Create `assets/sounds/my_collection/` and configure it in `config_ext.json`
-- **For royalty-free music**: Add to `config.json` and appropriate directories
-- The `.gitignore` file is configured to ignore all directories except `default`
-
-### Config Structure
-
-| Field | Description |
-|-------|-------------|
-| `work` | List of music files to play during work |
-| `done` | List of music files to play when done |
-| `notification` | List of music files for notifications |
-
-**File Path Formats**:
-
-- **Simple name**: `song.mp3` → Reads from `assets/sounds/<config-name>/song.mp3`
-- **With folder**: `default/song.mp3` → Reads from `assets/sounds/default/song.mp3`
-
-**Example**:
-
-```json
-{
-  "my_config": {
-    "work": [
-      "my_song.mp3",
-      "default/boss.mp3"
-    ],
-    "done": [
-      "default/congratulations.mp3"
-    ]
-  }
-}
-```
-
-## File Structure
-
-```
-bgm/
-├── aibgm/
-│   ├── cli.py             # Unified CLI entry point
-│   ├── config.json        # Built-in music configurations
-│   ├── config_ext.json    # Custom music configurations (gitignored)
-│   └── assets/sounds/     # Audio files
-│       └── default/
-├── main.py                # Local development entry point
-├── docs/
-│   └── Dev.md             # Development guide
-├── pyproject.toml
-└── README.md
-```
-
 ## Troubleshooting
 
-**No sound?**
 ```bash
 # Check pygame
 pip show pygame
 
-# Check log (Linux/macOS)
-cat ~/.config/bgm/bgm_player.log
-tail -50 ~/.config/bgm/bgm_player.log  # Last 50 lines
+# View daemon log
+cat ~/.config/mythril-agent-bgm/bgm_player.log
 
-# Windows
-type %APPDATA%\bgm\bgm_player.log
-```
-
-**Music won't stop?**
-```bash
-# Force kill if needed (Linux/macOS)
+# Force kill if music won't stop
 ps aux | grep bgm
 kill <pid>
-rm ~/.config/bgm/bgm_player.pid
-
-# Windows
-tasklist | findstr bgm
-taskkill /PID <pid> /F
-del %APPDATA%\bgm\bgm_player.pid
+rm ~/.config/mythril-agent-bgm/bgm_player.pid
 ```
 
-**Log file management**
+## Uninstall
 
-The daemon log file is automatically managed:
-- **Linux/macOS**: `~/.config/bgm/bgm_player.log`
-- **Windows**: `%APPDATA%\bgm\bgm_player.log`
-- Maximum 1000 lines before rotation
-- Keeps most recent 500 lines after rotation
-- No manual cleanup needed
+```bash
+# Remove the package
+pip uninstall mythril-agent-bgm
+
+# Remove user data (optional)
+rm -rf ~/.config/mythril-agent-bgm
+```
+
+## Development
+
+See [docs/Dev.md](docs/Dev.md) for the development guide.
 
 ## License
 
 MIT
-
-## Development
-
-See [docs/Dev.md](docs/Dev.md) for development guide.

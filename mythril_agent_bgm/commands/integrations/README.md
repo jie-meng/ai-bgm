@@ -27,7 +27,7 @@ New Tool integration for AI BGM.
 from pathlib import Path
 from typing import Tuple
 
-from aibgm.commands.integrations import AIToolIntegration
+from mythril_agent_bgm.commands.integrations import AIToolIntegration
 
 
 class NewToolIntegration(AIToolIntegration):
@@ -66,7 +66,7 @@ class NewToolIntegration(AIToolIntegration):
 Add your integration to `registry.py`:
 
 ```python
-from aibgm.commands.integrations.newtool import NewToolIntegration
+from mythril_agent_bgm.commands.integrations.newtool import NewToolIntegration
 
 class IntegrationRegistry:
     _integrations: List[Type[AIToolIntegration]] = [

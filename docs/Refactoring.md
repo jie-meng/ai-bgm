@@ -28,7 +28,7 @@ else:
 
 ✅ **Created two utility modules:**
 
-### 1. `aibgm/utils/platform_utils.py`
+### 1. `mythril_agent_bgm/utils/platform_utils.py`
 Simple platform detection:
 ```python
 def is_windows() -> bool
@@ -36,7 +36,7 @@ def is_unix() -> bool
 def get_platform_name() -> str
 ```
 
-### 2. `aibgm/utils/process.py`
+### 2. `mythril_agent_bgm/utils/process.py`
 Process management with cross-platform abstraction:
 ```python
 class ProcessManager:
@@ -59,8 +59,8 @@ def setup_signal_handlers(handler_func) -> None
 ✅ **Clean and readable:**
 ```python
 # play.py - After
-from aibgm.utils.process import ProcessManager, FileLock, setup_signal_handlers
-from aibgm.utils.platform_utils import is_windows
+from mythril_agent_bgm.utils.process import ProcessManager, FileLock, setup_signal_handlers
+from mythril_agent_bgm.utils.platform_utils import is_windows
 
 # Kill process - one line!
 killed = ProcessManager.kill_process(old_pid, graceful=True, timeout=2.0)
@@ -135,7 +135,7 @@ All platform-specific logic now handled transparently:
 
 | Feature | Windows | Unix (macOS/Linux) |
 |---------|---------|-------------------|
-| Config Path | `%APPDATA%\ai-bgm` | `~/.config/ai-bgm` |
+| Config Path | `%APPDATA%\mythril-agent-bgm` | `~/.config/mythril-agent-bgm` |
 | File Lock | No-op (PID file only) | fcntl.flock() |
 | Kill Signal | SIGTERM → CTRL_BREAK | SIGTERM → SIGKILL |
 | Signal Handlers | SIGINT, SIGTERM | SIGINT, SIGTERM |
@@ -143,15 +143,15 @@ All platform-specific logic now handled transparently:
 ## Files Changed
 
 **New Files:**
-- `aibgm/utils/platform_utils.py` - Platform detection
-- `aibgm/utils/process.py` - Process management
+- `mythril_agent_bgm/utils/platform_utils.py` - Platform detection
+- `mythril_agent_bgm/utils/process.py` - Process management
 - `tests/test_windows_compat.py` - Cross-platform tests
 - `tests/README.md` - Test documentation
 
 **Modified Files:**
-- `aibgm/commands/play.py` - Simplified using new utils
-- `aibgm/commands/stop.py` - Simplified using new utils
-- `aibgm/utils/common.py` - Uses `is_windows()`
+- `mythril_agent_bgm/commands/play.py` - Simplified using new utils
+- `mythril_agent_bgm/commands/stop.py` - Simplified using new utils
+- `mythril_agent_bgm/utils/common.py` - Uses `is_windows()`
 - `pyproject.toml` - Excludes tests from package
 
 ## Conclusion

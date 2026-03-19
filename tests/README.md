@@ -14,8 +14,8 @@ python tests/test_windows_compat.py
 
 This test verifies:
 - ✅ Configuration directories use correct paths for each platform
-  - Linux/macOS: `~/.config/ai-bgm/`
-  - Windows: `%APPDATA%\ai-bgm\`
+  - Linux/macOS: `~/.config/mythril-agent-bgm/`
+  - Windows: `%APPDATA%\mythril-agent-bgm\`
 - ✅ Signal availability (SIGINT, SIGTERM, SIGKILL, CTRL_BREAK_EVENT)
 - ✅ fcntl module availability (Unix only)
 

@@ -24,16 +24,16 @@ Recommended tools:
 
 ```bash
 # Format code
-black aibgm/
+black mythril_agent_bgm/
 
 # Lint
-flake8 aibgm/
+flake8 mythril_agent_bgm/
 
 # Type check
-mypy aibgm/
+mypy mythril_agent_bgm/
 
 # All checks
-black aibgm/ && flake8 aibgm/ && mypy aibgm/
+black mythril_agent_bgm/ && flake8 mythril_agent_bgm/ && mypy mythril_agent_bgm/
 ```
 
 ## Technical Design
@@ -92,16 +92,16 @@ black aibgm/ && flake8 aibgm/ && mypy aibgm/
 {"selected": "maou"}
 ```
 
-Location: `~/.config/bgm/`
+Location: `~/.config/mythril-agent-bgm/`
 
 ### Key Design Patterns
 
 1. **Click CLI**: Uses Click 8.3.1 for unified command structure
-2. **Daemon Mode**: Player runs detached with PID tracking at `~/.config/bgm/bgm_player.pid`
+2. **Daemon Mode**: Player runs detached with PID tracking at `~/.config/mythril-agent-bgm/bgm_player.pid`
 3. **Log Management**: Automatic log rotation
    - Max 1000 lines before rotation
    - Keeps 500 most recent lines
-   - Logs to `~/.config/bgm/bgm_player.log`
+   - Logs to `~/.config/mythril-agent-bgm/bgm_player.log`
 4. **Signal Handling**: Graceful shutdown on SIGTERM/SIGINT
 5. **Cross-Platform**: Uses `platform.system()` for Windows/Unix differences
 
@@ -126,7 +126,7 @@ Adding a new AI tool integration is now streamlined with the modular integration
 
 #### Step 1: Create Integration File
 
-Create a new file in `aibgm/commands/integrations/<toolname>.py`:
+Create a new file in `mythril_agent_bgm/commands/integrations/<toolname>.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -137,7 +137,7 @@ New Tool integration for AI BGM.
 from pathlib import Path
 from typing import Tuple
 
-from aibgm.commands.integrations import AIToolIntegration
+from mythril_agent_bgm.commands.integrations import AIToolIntegration
 
 
 class NewToolIntegration(AIToolIntegration):
@@ -183,10 +183,10 @@ class NewToolIntegration(AIToolIntegration):
 
 #### Step 2: Register Integration
 
-Add your integration to `aibgm/commands/integrations/registry.py`:
+Add your integration to `mythril_agent_bgm/commands/integrations/registry.py`:
 
 ```python
-from aibgm.commands.integrations.newtool import NewToolIntegration
+from mythril_agent_bgm.commands.integrations.newtool import NewToolIntegration
 
 class IntegrationRegistry:
     _integrations: List[Type[AIToolIntegration]] = [
@@ -208,7 +208,7 @@ bgm setup
 #### Integration Architecture
 
 ```
-aibgm/commands/integrations/
+mythril_agent_bgm/commands/integrations/
 ├── __init__.py           # Base AIToolIntegration class
 ├── registry.py           # Integration registry
 ├── claude.py             # Claude Code integration
@@ -235,9 +235,27 @@ AI BGM supports the following AI CLI tools with hooks:
 
 ### Add New Music Configuration
 
-1. Create directory: `aibgm/assets/sounds/<name>/`
+Built-in (repo) config (for royalty-free music that can be shared):
+
+1. Create directory: `mythril_agent_bgm/assets/sounds/<name>/`
 2. Add audio files
-3. Update `aibgm/config.json`
+3. Update `mythril_agent_bgm/config.json`
+
+User-local custom config (for personal/copyrighted music):
+
+The user config directory is created automatically on first run of any `bgm` command.
+It includes a starter `config.json` and a `README.md` with usage instructions.
+
+1. After running any `bgm` command, find your config directory:
+   - Linux/macOS: `~/.config/mythril-agent-bgm/`
+   - Windows: `%APPDATA%\mythril-agent-bgm\`
+2. Add audio files under `sounds/<name>/`
+3. Edit `config.json` to add your configuration
+
+Runtime merge order:
+
+- Built-in `mythril_agent_bgm/config.json`
+- User `~/.config/mythril-agent-bgm/config.json` (field-level override)
 
 ### Add CLI Option
 
@@ -270,10 +288,10 @@ def my_command(new_option):
 ps aux | grep "bgm"
 
 # View logs
-tail -f ~/.config/bgm/bgm_player.log
+tail -f ~/.config/mythril-agent-bgm/bgm_player.log
 
 # Check PID file
-cat ~/.config/bgm/bgm_player.pid
+cat ~/.config/mythril-agent-bgm/bgm_player.pid
 
 # Test pygame directly
 python -c "import pygame; pygame.mixer.init(); print('OK')"

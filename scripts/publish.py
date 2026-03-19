@@ -21,7 +21,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT = PROJECT_ROOT / "pyproject.toml"
-INIT_FILE = PROJECT_ROOT / "aibgm" / "__init__.py"
+INIT_FILE = PROJECT_ROOT / "mythril_agent_bgm" / "__init__.py"
 DIST_DIR = PROJECT_ROOT / "dist"
 
 GREEN = "\033[0;32m"
@@ -91,6 +91,10 @@ def _check_git_clean() -> bool:
 
 def _clean_dist() -> None:
     """Remove old build artifacts."""
+    build_dir = PROJECT_ROOT / "build"
+    if build_dir.exists():
+        shutil.rmtree(build_dir)
+        print(f"  Cleaned {build_dir}")
     if DIST_DIR.exists():
         shutil.rmtree(DIST_DIR)
         print(f"  Cleaned {DIST_DIR}")
@@ -146,9 +150,7 @@ def _resolve_credentials(test: bool) -> tuple[str | None, str | None]:
     print(f"    2. Add [{section}] section to ~/.pypirc")
     print(f"    3. Enter API token now")
     if test:
-        print(
-            f"  Get a token at: {BOLD}https://test.pypi.org/manage/account/token/{NC}"
-        )
+        print(f"  Get a token at: {BOLD}https://test.pypi.org/manage/account/token/{NC}")
     else:
         print(f"  Get a token at: {BOLD}https://pypi.org/manage/account/token/{NC}")
 
@@ -209,8 +211,7 @@ def main() -> None:
 
     if init_ver != pyproject_ver:
         print(
-            f"{RED}Version mismatch: "
-            f"__init__.py={init_ver}, pyproject.toml={pyproject_ver}{NC}"
+            f"{RED}Version mismatch: " f"__init__.py={init_ver}, pyproject.toml={pyproject_ver}{NC}"
         )
         sys.exit(1)
 

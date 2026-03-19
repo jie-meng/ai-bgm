@@ -24,8 +24,8 @@ AI agent guidelines for working on the AI BGM project.
 - Type hints required for function signatures
 - Use `pathlib.Path`, not `os.path`
 - Config paths (cross-platform):
-  - Linux/macOS: `~/.config/bgm/`
-  - Windows: `%APPDATA%\bgm\`
+  - Linux/macOS: `~/.config/mythril-agent-bgm/`
+  - Windows: `%APPDATA%\mythril-agent-bgm\`
 - User selection in `selection.json` within config directory
 
 ### Design Principles
@@ -45,8 +45,8 @@ Don't check `platform.system()` multiple times. Use the provided helpers: `is_wi
 Code should be open for extension, closed for modification. Add new platform support by extending utilities, not by adding conditionals everywhere.
 
 #### 5. Cross-Platform Implementation
-- Always use `aibgm.utils.platform_utils` for platform detection
-- Always use `aibgm.utils.process` for process management
+- Always use `mythril_agent_bgm.utils.platform_utils` for platform detection
+- Always use `mythril_agent_bgm.utils.process` for process management
 - Never write `if platform.system() == "Windows"` in business code
 - See [docs/Refactoring.md](docs/Refactoring.md) for detailed examples
 
@@ -54,11 +54,11 @@ Code should be open for extension, closed for modification. Add new platform sup
 
 | Path | Purpose |
 |------|---------|
-| `aibgm/config.json` | BGM configurations |
-| `aibgm/cli.py` | Unified CLI entry point |
+| `mythril_agent_bgm/config.json` | BGM configurations |
+| `mythril_agent_bgm/cli.py` | Unified CLI entry point |
 | `main.py` | Local development entry (not packaged) |
-| `aibgm/utils/platform_utils.py` | Platform detection utilities |
-| `aibgm/utils/process.py` | Cross-platform process management |
+| `mythril_agent_bgm/utils/platform_utils.py` | Platform detection utilities |
+| `mythril_agent_bgm/utils/process.py` | Cross-platform process management |
 
 ### Daemon Behavior
 
@@ -73,7 +73,7 @@ Code should be open for extension, closed for modification. Add new platform sup
 
 ### Platform-Specific Code
 
-Use utilities from `aibgm.utils.platform_utils` and `aibgm.utils.process`:
+Use utilities from `mythril_agent_bgm.utils.platform_utils` and `mythril_agent_bgm.utils.process`:
 - **Platform detection**: `is_windows()`, `is_unix()`
 - **Process management**: `ProcessManager.kill_process()`, `ProcessManager.check_process_exists()`
 - **File locking**: `FileLock` context manager
@@ -84,8 +84,13 @@ See source files for detailed usage (docstrings and type hints).
 ### Add Music Config
 
 ```bash
-# 1. Add files to aibgm/assets/sounds/<name>/
-# 2. Update aibgm/config.json
+# Built-in (repo) config:
+# 1. Add files to mythril_agent_bgm/assets/sounds/<name>/
+# 2. Update mythril_agent_bgm/config.json
+
+# User-local custom config:
+# 1. Add files to ~/.config/mythril-agent-bgm/sounds/<name>/
+# 2. Update ~/.config/mythril-agent-bgm/config.json
 {
   "<name>": {
     "work": ["file.mp3"],
@@ -110,13 +115,13 @@ def my_command(option):
 
 Adding a new AI tool integration:
 
-1. Create `aibgm/commands/integrations/<toolname>.py`
+1. Create `mythril_agent_bgm/commands/integrations/<toolname>.py`
 2. Implement `AIToolIntegration` abstract class (including `cleanup_hooks`)
-3. Register in `aibgm/commands/integrations/registry.py`
+3. Register in `mythril_agent_bgm/commands/integrations/registry.py`
 
 Example:
 ```python
-from aibgm.commands.integrations import AIToolIntegration
+from mythril_agent_bgm.commands.integrations import AIToolIntegration
 
 class NewToolIntegration(AIToolIntegration):
     def get_tool_info(self) -> Tuple[str, str]:
@@ -155,13 +160,13 @@ python tests/test_windows_compat.py
 ### Code Quality
 ```bash
 # Format
-black aibgm/
+black mythril_agent_bgm/
 
 # Lint
-flake8 aibgm/
+flake8 mythril_agent_bgm/
 
 # Type check
-mypy aibgm/
+mypy mythril_agent_bgm/
 ```
 
 ### Manual Testing

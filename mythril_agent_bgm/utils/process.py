@@ -9,7 +9,7 @@ import signal
 import time
 from typing import Optional
 
-from aibgm.utils.platform_utils import is_windows, is_unix
+from mythril_agent_bgm.utils.platform_utils import is_windows, is_unix
 
 # Import fcntl only on Unix-like systems
 if is_unix():
