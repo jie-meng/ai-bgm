@@ -1,5 +1,9 @@
 # mythril-agent-bgm
 
+<p align="center">
+  <img src="docs/assets/banner.webp" width="500" alt="mythril-agent-bgm">
+</p>
+
 English | [中文](./README.zh-CN.md)
 
 > "AI fatigue is real." - [Siddhant Khare](https://siddhantkhare.com/writing/ai-fatigue-is-real)
