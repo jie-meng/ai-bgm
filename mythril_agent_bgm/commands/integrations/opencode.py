@@ -23,6 +23,11 @@ export const BGMPlugin = async ({ $ }) => {
 
   const DEBOUNCE_MS = 2000;
 
+  // Helper to safely execute bgm commands (fire-and-forget)
+  const runBgm = (cmd) => {
+    $`bgm ${cmd}`.quiet().nothrow().catch(() => {});
+  };
+
   return {
     event: async ({ event }) => {
       const props = event.properties;
@@ -35,37 +40,35 @@ export const BGMPlugin = async ({ $ }) => {
           break;
 
         case "message.updated":
+          // Work on any user message (session ID check removed due to opencode bug #14808)
           if (
             !isWorking &&
             props?.info?.role === "user" &&
-            props?.info?.sessionID === currentSessionID &&
             Date.now() - lastIdleTime > DEBOUNCE_MS
           ) {
             isWorking = true;
-            await $`bgm play work 0`.quiet().nothrow();
+            runBgm("play work 0");
           }
           break;
 
         case "session.idle":
-          if (isWorking && props?.sessionID === currentSessionID) {
+          if (isWorking) {
             isWorking = false;
             lastIdleTime = Date.now();
-            await $`bgm play done`.quiet().nothrow();
+            runBgm("play done");
           }
           break;
 
         case "session.deleted":
-          if (props?.info?.id === currentSessionID) {
-            isWorking = false;
-            await $`bgm stop`.quiet().nothrow();
-            currentSessionID = null;
-          }
+          isWorking = false;
+          runBgm("stop");
+          currentSessionID = null;
           break;
       }
     },
 
     "permission.ask": async () => {
-      await $`bgm play notification 0`.quiet().nothrow();
+      runBgm("play notification 0");
     },
   };
 };
