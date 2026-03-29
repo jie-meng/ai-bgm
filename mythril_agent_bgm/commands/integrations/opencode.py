@@ -79,6 +79,7 @@ class OpenCodeIntegration(AIToolIntegration):
             "  let currentSessionID = null;\n"
             "  let isWorking = false;\n"
             "  let lastIdleTime = 0;\n"
+            "  let isWaitingPermission = false;\n"
             "\n"
             "  const DEBOUNCE_MS = 2000;\n"
             f'  const BGM = "{bgm_path}";\n'
@@ -96,6 +97,7 @@ class OpenCodeIntegration(AIToolIntegration):
             "          currentSessionID = props?.info?.id ?? null;\n"
             "          isWorking = false;\n"
             "          lastIdleTime = 0;\n"
+            "          isWaitingPermission = false;\n"
             "          break;\n"
             "\n"
             '        case "message.updated":\n'
@@ -104,6 +106,19 @@ class OpenCodeIntegration(AIToolIntegration):
             '            props?.info?.role === "user" &&\n'
             "            Date.now() - lastIdleTime > DEBOUNCE_MS\n"
             "          ) {\n"
+            "            isWorking = true;\n"
+            '            runBgm("play", "work", "0");\n'
+            "          }\n"
+            "          break;\n"
+            "\n"
+            '        case "permission.asked":\n'
+            "          isWaitingPermission = true;\n"
+            '          runBgm("play", "notification", "0");\n'
+            "          break;\n"
+            "\n"
+            '        case "permission.replied":\n'
+            "          if (isWaitingPermission) {\n"
+            "            isWaitingPermission = false;\n"
             "            isWorking = true;\n"
             '            runBgm("play", "work", "0");\n'
             "          }\n"
@@ -119,14 +134,11 @@ class OpenCodeIntegration(AIToolIntegration):
             "\n"
             '        case "session.deleted":\n'
             "          isWorking = false;\n"
+            "          isWaitingPermission = false;\n"
             '          runBgm("stop");\n'
             "          currentSessionID = null;\n"
             "          break;\n"
             "      }\n"
-            "    },\n"
-            "\n"
-            '    "permission.ask": async () => {\n'
-            '      runBgm("play", "notification", "0");\n'
             "    },\n"
             "  };\n"
             "};\n"
