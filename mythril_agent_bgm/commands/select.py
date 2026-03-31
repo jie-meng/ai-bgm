@@ -85,28 +85,39 @@ def curses_single_select(
     curses.init_pair(3, curses.COLOR_YELLOW, -1)
 
     cursor = current_index
+    scroll_offset = 0
 
     def draw() -> None:
+        nonlocal scroll_offset
         stdscr.clear()
+        max_y, max_x = stdscr.getmaxyx()
+
         stdscr.addstr(0, 0, title, curses.A_BOLD)
-        hint = "↑/↓ or j/k move | Enter/Space confirm | q quit"
+        hint = "↑/↓ or i/j move | Enter/Space confirm | q quit"
         stdscr.addstr(1, 0, hint, curses.color_pair(3))
 
-        row = 3
-        for i, item in enumerate(items):
-            is_current = i == current_index
-            is_cursor = i == cursor
+        list_start_row = 3
+        visible_rows = max_y - list_start_row - 2
 
-            if is_current:
-                marker = "●"
-                base_color = curses.color_pair(2)
-            else:
-                marker = " "
-                base_color = 0
+        if cursor < scroll_offset:
+            scroll_offset = cursor
+        elif cursor >= scroll_offset + visible_rows:
+            scroll_offset = cursor - visible_rows + 1
 
-            attr = curses.A_REVERSE if is_cursor else base_color
+        for idx in range(visible_rows):
+            item_idx = idx + scroll_offset
+            if item_idx >= len(items):
+                break
+            item = items[item_idx]
+            is_cursor = item_idx == cursor
+            prefix = "▶ " if is_cursor else "  "
+            attr = curses.A_REVERSE if is_cursor else 0
+            color = curses.color_pair(2) if is_cursor else 0
+            display = f"{prefix}{item}"
             try:
-                stdscr.addstr(row + i, 0, f"  {marker}  {item}", attr)
+                stdscr.addstr(
+                    list_start_row + idx, 0, display[: max_x - 1], attr | color
+                )
             except curses.error:
                 pass
 
@@ -116,7 +127,7 @@ def curses_single_select(
         draw()
         key = stdscr.getch()
 
-        if key in (curses.KEY_UP, ord("k")):
+        if key in (curses.KEY_UP, ord("i"), ord("k")):
             cursor = (cursor - 1) % len(items)
         elif key in (curses.KEY_DOWN, ord("j")):
             cursor = (cursor + 1) % len(items)
@@ -137,7 +148,9 @@ def select():
         sys.exit(1)
 
     current_selection = load_current_selection()
-    current_index = options.index(current_selection) if current_selection in options else 0
+    current_index = (
+        options.index(current_selection) if current_selection in options else 0
+    )
 
     chosen_index = curses.wrapper(
         curses_single_select,
