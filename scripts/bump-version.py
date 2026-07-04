@@ -18,7 +18,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT = PROJECT_ROOT / "pyproject.toml"
-INIT_FILE = PROJECT_ROOT / "mythril_agent_bgm" / "__init__.py"
+INIT_FILE = PROJECT_ROOT / "src" / "mythril_agent_bgm" / "__init__.py"
 
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 

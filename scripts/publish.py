@@ -21,7 +21,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT = PROJECT_ROOT / "pyproject.toml"
-INIT_FILE = PROJECT_ROOT / "mythril_agent_bgm" / "__init__.py"
+INIT_FILE = PROJECT_ROOT / "src" / "mythril_agent_bgm" / "__init__.py"
 DIST_DIR = PROJECT_ROOT / "dist"
 
 GREEN = "\033[0;32m"
