@@ -7,6 +7,7 @@ This directory contains integration modules for various AI CLI tools.
 - `__init__.py` - Base `AIToolIntegration` abstract class
 - `registry.py` - Integration registry that manages all integrations
 - `claude.py` - Claude Code integration
+- `codebuddy.py` - CodeBuddy Code integration
 - `copilot.py` - GitHub Copilot CLI integration (dedicated hooks file)
 - `cursor_agent.py` - Cursor Agent integration
 - `gemini.py` - Gemini CLI integration

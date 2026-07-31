@@ -51,6 +51,7 @@ bgm stop
 ## 已支持集成
 
 - Claude Code
+- CodeBuddy Code
 - GitHub Copilot CLI
 - Cursor Agent
 - Gemini CLI
