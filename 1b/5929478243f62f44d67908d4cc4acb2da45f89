@@ -1,0 +1,22 @@
+src/mythril_agent_bgm/commands/play.py
+  s_24d03c398c54b5::t_efc90599e5dd4e 192-216,230,258,262-265
+  s_24d03c398c54b5::t_df7beb20c2ad30 32,37,42,52,61,63
+  s_24d03c398c54b5::t_c79877188a9506 11
+  s_24d03c398c54b5::t_345ae94542d287 266
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "1b5929478243f62f44d67908d4cc4acb2da45f89",
+  "prompts": {},
+  "sessions": {
+    "s_24d03c398c54b5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_03eb35974ffeGjaPXfSv4YiNnl",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": "Jie Meng <jmengxy@gmail.com>"
+    }
+  }
+}
