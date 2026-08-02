@@ -8,6 +8,7 @@ import sys
 import time
 import subprocess
 import random
+from typing import Optional
 
 import click
 import pygame
@@ -28,17 +29,17 @@ from mythril_agent_bgm.utils.process import ProcessManager, FileLock, setup_sign
 from mythril_agent_bgm.utils.platform_utils import is_windows
 
 
-def kill_existing_process() -> bool:
+def kill_existing_process() -> Optional[int]:
     """
     Kill any existing BGM player process.
 
     Returns:
-        True if a process was killed, False otherwise.
+        The PID of the killed process, or None if there was none.
     """
     pid_file = get_pid_file()
 
     if not pid_file.exists():
-        return False
+        return None
 
     try:
         with open(pid_file, "r") as f:
@@ -48,7 +49,7 @@ def kill_existing_process() -> bool:
         if not ProcessManager.check_process_exists(old_pid):
             # Process doesn't exist, remove stale PID file
             pid_file.unlink()
-            return False
+            return None
 
         # Kill the existing process
         killed = ProcessManager.kill_process(old_pid, graceful=True, timeout=2.0)
@@ -57,9 +58,9 @@ def kill_existing_process() -> bool:
         if pid_file.exists():
             pid_file.unlink()
 
-        return killed
+        return old_pid if killed else None
     except (ValueError, IOError):
-        return False
+        return None
 
 
 def play_music(selection: str, music_type: str, repeat: int = 1) -> None:
@@ -188,6 +189,31 @@ def play_music(selection: str, music_type: str, repeat: int = 1) -> None:
             cleanup_pid()
 
 
+def wait_for_daemon_pid(previous_pid: Optional[int], timeout: float = 5.0) -> None:
+    """
+    Wait for the new daemon to write its PID to the PID file.
+
+    The daemon saves its PID asynchronously after startup. Holding the
+    caller's file lock until the PID appears prevents a rapid follow-up
+    play/stop call from reading a stale or empty PID file and spawning
+    yet another daemon, which would leave orphaned players overlapping.
+    """
+    pid_file = get_pid_file()
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            saved_pid = int(pid_file.read_text().strip())
+        except (ValueError, OSError):
+            saved_pid = None
+        if (
+            saved_pid is not None
+            and saved_pid != previous_pid
+            and ProcessManager.check_process_exists(saved_pid)
+        ):
+            return
+        time.sleep(0.1)
+
+
 def start_background_player(music_type: str, loop: int) -> None:
     """
     Start the BGM player in the background as a daemon process.
@@ -201,7 +227,7 @@ def start_background_player(music_type: str, loop: int) -> None:
     # Use file lock to prevent concurrent start
     with FileLock(str(lock_file)):
         # Kill any existing BGM player process first
-        killed = kill_existing_process()
+        previous_pid = kill_existing_process()
 
         # Use subprocess to start a detached background process
         args = ["bgm", "play", "--daemon", music_type, str(loop)]
@@ -229,9 +255,14 @@ def start_background_player(music_type: str, loop: int) -> None:
                 close_fds=True,
             )
 
-        if killed:
+        if previous_pid is not None:
             click.echo("Stopped previous BGM player")
         click.echo("BGM player started in background")
+
+        # Only release the lock once the new daemon owns the PID file,
+        # otherwise a concurrent play/stop would kill nothing and start
+        # a second daemon (the race that piled up overlapping players).
+        wait_for_daemon_pid(previous_pid)
 
         # Give it a moment to start and save PID
         time.sleep(0.5)
