@@ -1,0 +1,29 @@
+src/mythril_agent_bgm/commands/integrations/opencode.py
+  s_9d7fc41f7c705b::t_e37e950a68525d 115-117,120-123,132-135,170-173
+  s_9d7fc41f7c705b::t_aad76e70f95545 166
+  s_9d7fc41f7c705b::t_1ea640c652efdc 112,119,137
+  s_9d7fc41f7c705b::t_d2c4132bc25daa 113-114,131
+  s_9d7fc41f7c705b::t_d1bc0977eab0a7 160-165,167-169,174-180
+src/mythril_agent_bgm/commands/integrations/mimo.py
+  s_9d7fc41f7c705b::t_aad76e70f95545 166
+  s_9d7fc41f7c705b::t_658b41314f1294 112,119,137
+  s_9d7fc41f7c705b::t_d2c4132bc25daa 113-114,131
+  s_9d7fc41f7c705b::t_e37e950a68525d 115-117,120-123,132-135,170-173
+  s_9d7fc41f7c705b::t_28e09a77801b56 160-165,167-169,174-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "6039a2cc5e3a199376e43215c62174c212252309",
+  "prompts": {},
+  "sessions": {
+    "s_9d7fc41f7c705b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_03fad32a4ffeCXi5demy60sAI1",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": "Jie Meng <jmengxy@gmail.com>"
+    }
+  }
+}
