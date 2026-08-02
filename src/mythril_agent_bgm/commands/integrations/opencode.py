@@ -109,9 +109,18 @@ class OpenCodeIntegration(AIToolIntegration):
             "\n"
             "      switch (event.type) {\n"
             '        case "session.created":\n'
-            "          // Top-level sessions have no parentID; subagent sessions do.\n"
-            "          if (!props?.info?.parentID) {\n"
+            '        case "session.updated":\n'
+            "          // Main sessions have no parentID; subagents do.\n"
+            "          // session.updated also covers dropped session.created.\n"
+            "          if (!props?.info?.parentID &&\n"
+            "              mainSessionID === null\n"
+            "            ) {\n"
             "            mainSessionID = props?.info?.id ?? null;\n"
+            "          }\n"
+            '          if (\n'
+            '            event.type === "session.created" &&\n'
+            '            !props?.info?.parentID\n'
+            '          ) {\n'
             "            isWorking = false;\n"
             "            lastIdleTime = 0;\n"
             "            isWaitingInput = false;\n"
@@ -119,7 +128,13 @@ class OpenCodeIntegration(AIToolIntegration):
             "          break;\n"
             "\n"
             '        case "message.updated":\n'
+            "          // Only start work BGM once per run:\n"
+            "          // the main session gets repeated role=user updates\n"
+            "          // (synthetic messages from task tool completions,\n"
+            "          // summary fills), which would otherwise restart work\n"
+            "          // BGM (and shuffle tracks) every few seconds.\n"
             "          if (\n"
+            "            !isWorking &&\n"
             '            props?.info?.role === "user" &&\n'
             "            Date.now() - lastIdleTime > DEBOUNCE_MS\n"
             "          ) {\n"
@@ -139,6 +154,27 @@ class OpenCodeIntegration(AIToolIntegration):
             "            isWaitingInput = false;\n"
             "            isWorking = true;\n"
             '            runBgm("play", "work", "0");\n'
+            "          }\n"
+            "          break;\n"
+            "\n"
+            '        case "session.status":\n'
+            "          // Newer opencode versions emit session.status\n"
+            "          // {sessionID, status} on every runner state change.\n"
+            "          // Use it as a reliable work/done anchor for the main\n"
+            "          // session only; subagent sessions are filtered out.\n"
+            "          if (props?.sessionID === mainSessionID) {\n"
+            '            if (props?.status?.type === "idle" && isWorking) {\n'
+            "              isWorking = false;\n"
+            "              lastIdleTime = Date.now();\n"
+            '              runBgm("play", "done");\n'
+            '            } else if (\n'
+            '              props?.status?.type === "busy" &&\n'
+            '              !isWorking\n'
+            '            ) {\n'
+            "              isWorking = true;\n"
+            "              isWaitingInput = false;\n"
+            '              runBgm("play", "work", "0");\n'
+            "            }\n"
             "          }\n"
             "          break;\n"
             "\n"
