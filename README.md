@@ -52,6 +52,7 @@ bgm stop
 ## Supported Integrations
 
 - Claude Code
+- Cline CLI (runtime hooks)
 - CodeBuddy Code
 - GitHub Copilot CLI
 - Cursor Agent

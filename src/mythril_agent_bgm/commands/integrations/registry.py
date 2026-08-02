@@ -7,6 +7,7 @@ from typing import List, Type
 
 from mythril_agent_bgm.commands.integrations import AIToolIntegration
 from mythril_agent_bgm.commands.integrations.claude import ClaudeIntegration
+from mythril_agent_bgm.commands.integrations.cline import ClineIntegration
 from mythril_agent_bgm.commands.integrations.codebuddy import CodeBuddyIntegration
 from mythril_agent_bgm.commands.integrations.copilot import CopilotIntegration
 from mythril_agent_bgm.commands.integrations.cursor_agent import CursorAgentIntegration
@@ -28,6 +29,7 @@ class IntegrationRegistry:
     # Register all available integrations here
     _integrations: List[Type[AIToolIntegration]] = [
         ClaudeIntegration,
+        ClineIntegration,
         CodeBuddyIntegration,
         CopilotIntegration,
         CursorAgentIntegration,

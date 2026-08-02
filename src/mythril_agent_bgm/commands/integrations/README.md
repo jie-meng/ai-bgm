@@ -7,6 +7,7 @@ This directory contains integration modules for various AI CLI tools.
 - `__init__.py` - Base `AIToolIntegration` abstract class
 - `registry.py` - Integration registry that manages all integrations
 - `claude.py` - Claude Code integration
+- `cline.py` - Cline CLI integration (runtime hooks)
 - `codebuddy.py` - CodeBuddy Code integration
 - `copilot.py` - GitHub Copilot CLI integration (dedicated hooks file)
 - `cursor_agent.py` - Cursor Agent integration
@@ -93,6 +94,7 @@ bgm setup
 ## Available Integrations
 
 - **Claude Code**: [Hooks Documentation](https://code.claude.com/docs/en/hooks)
+- **Cline CLI**: [CLI Reference](https://docs.cline.bot/cli/cli-reference.md) — installs executable hook scripts into `~/.cline/hooks/` (the `--hooks-dir` default)
 - **GitHub Copilot CLI**: [Hooks Documentation](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/use-hooks) — installs a dedicated `~/.copilot/hooks/mythril-agent-bgm.json` (respects `COPILOT_HOME`)
 - **Cursor Agent**: [Hooks Documentation](https://cursor.com/cn/docs/agent/hooks)
 - **Gemini CLI**: [Hooks Documentation](https://geminicli.com/docs/hooks/)
