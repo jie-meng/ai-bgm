@@ -1,0 +1,16 @@
+pyproject.toml
+  h_e0538e51a4c5ef 7
+src/mythril_agent_bgm/__init__.py
+  h_e0538e51a4c5ef 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "820d7f840583f3f10c9b4ab801ce89f795a77600",
+  "prompts": {},
+  "humans": {
+    "h_e0538e51a4c5ef": {
+      "author": "Jie Meng <jmengxy@gmail.com>"
+    }
+  }
+}
