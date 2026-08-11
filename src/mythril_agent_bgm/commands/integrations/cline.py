@@ -17,9 +17,12 @@ Hooks installed by BGM:
 - ``TaskStart.sh``       -> loop work music
 - ``TaskComplete.sh``    -> play the done cue
 - ``SessionShutdown.sh`` -> stop all music
-- ``PostToolUse.sh``     -> play the notification sound when the agent asks
+- ``PreToolUse.sh``      -> play the notification sound when the agent asks
   the user a question (the ``ask_question`` tool, read from
-  ``.tool_result.name``)
+  ``.tool_call.name``; fires before the tool blocks waiting for input)
+- ``PostToolUse.sh``     -> resume the work loop after the user answers
+  (``ask_question`` completes, read from ``.tool_result.name``; the tool
+  result only exists once the user has answered)
 
 References:
 - https://docs.cline.bot/cli/cli-reference.md (--hooks-dir)
@@ -33,7 +36,7 @@ from typing import Tuple
 from mythril_agent_bgm.commands.integrations import AIToolIntegration
 
 # Hook events we install. Must match Cline's runtime hook names.
-_HOOK_EVENTS = ("TaskStart", "TaskComplete", "SessionShutdown", "PostToolUse")
+_HOOK_EVENTS = ("TaskStart", "TaskComplete", "SessionShutdown", "PreToolUse", "PostToolUse")
 
 
 class ClineIntegration(AIToolIntegration):
@@ -126,12 +129,20 @@ class ClineIntegration(AIToolIntegration):
             body = f'command -v "{bgm_path}" >/dev/null 2>&1 && "{bgm_path}" play done\n'
         elif event == "SessionShutdown":
             body = f'command -v "{bgm_path}" >/dev/null 2>&1 && "{bgm_path}" stop\n'
-        elif event == "PostToolUse":
+        elif event == "PreToolUse":
             body = (
-                'input=$(cat)\n'
-                "tool=$(printf '%s' \"$input\" | jq -r '.tool_result.name // \"\"' 2>/dev/null)\n"
+                "input=$(cat)\n"
+                "tool=$(printf '%s' \"$input\" | jq -r '.tool_call.name // \"\"' 2>/dev/null)\n"
                 'if [ "$tool" = "ask_question" ]; then\n'
                 f'  command -v "{bgm_path}" >/dev/null 2>&1 && "{bgm_path}" play notification 0\n'
+                "fi\n"
+            )
+        elif event == "PostToolUse":
+            body = (
+                "input=$(cat)\n"
+                "tool=$(printf '%s' \"$input\" | jq -r '.tool_result.name // \"\"' 2>/dev/null)\n"
+                'if [ "$tool" = "ask_question" ]; then\n'
+                f'  command -v "{bgm_path}" >/dev/null 2>&1 && "{bgm_path}" play work 0\n'
                 "fi\n"
             )
         else:
