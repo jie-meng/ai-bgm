@@ -1,0 +1,22 @@
+src/mythril_agent_bgm/commands/integrations/cline.py
+  s_2773116cc9281b::t_ad1a33ef65b443 20,22-25
+  s_2773116cc9281b::t_1be1879dc7a8c4 39
+  s_2773116cc9281b::t_86035da7d31fa9 132-133,135-139,145
+  s_2773116cc9281b::t_4ccd522ebc27f5 134,142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "6c3caa9aecdc6e904616a245227d952e21301d1a",
+  "prompts": {},
+  "sessions": {
+    "s_2773116cc9281b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0109963c2ffeZ6BuZ2GF08B9th",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": "Jie Meng <jmengxy@gmail.com>"
+    }
+  }
+}
