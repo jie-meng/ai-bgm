@@ -51,7 +51,7 @@ def test_settings_path_under_dsh_profile(patched_home):
         )
 
 
-def test_generate_plugin_contains_four_handlers():
+def test_generate_plugin_contains_expected_pieces():
     plugin = DshIntegration._generate_plugin("/x/bgm")
     assert "play work 0" in plugin
     assert "play done" in plugin
@@ -65,6 +65,12 @@ def test_generate_plugin_contains_four_handlers():
     assert "isRootSession" in plugin
     assert "DEBOUNCE_MS" in plugin
     assert '"/x/bgm"' in plugin
+    # ask_user_question resets the work debounce so the user's immediate
+    # reply restarts work music (the reset also appears in session/disposed;
+    # the assertion guards that the template contains the reset at all).
+    assert "lastWorkTime = 0" in plugin
+    # The done cue is gated on work music having actually played.
+    assert "runningRoots.size === 0 && lastWorkTime > 0" in plugin
 
 
 def test_generate_plugin_work_triggered_by_user_message_not_agent_status():
@@ -79,6 +85,11 @@ def test_generate_plugin_work_triggered_by_user_message_not_agent_status():
     # agent/status handler only does bookkeeping + the done cue, never work.
     status_block = plugin[plugin.index('"agent/status"') : plugin.index('"session/event"')]
     assert 'run("play", "work", "0")' not in status_block
+    # Direct guard (upgrades the position inference above to a guard
+    # condition assertion): the work trigger is debounced on lastWorkTime,
+    # and the ask_user_question branch resets it so the user's immediate
+    # reply restarts work music.
+    assert "isRootSession(session) && now - lastWorkTime > DEBOUNCE_MS" in plugin
 
 
 def test_generate_plugin_swallows_spawn_errors():

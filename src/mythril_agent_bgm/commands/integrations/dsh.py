@@ -78,8 +78,11 @@ export function apply(ctx) {
         runningRoots.add(agent);
       } else if (status === "idle") {
         runningRoots.delete(agent);
-        // Last root agent idle -> bgm play done
-        if (runningRoots.size === 0) run("play", "done");
+        // Last root agent idle -> bgm play done. Gated on work music
+        // actually having played this session: a running->idle transition
+        // with no prior user/message (e.g. resumed session auto-runs on a
+        // pending inbox) must not fire a done cue.
+        if (runningRoots.size === 0 && lastWorkTime > 0) run("play", "done");
       }
     },
     { global: true }
@@ -100,7 +103,11 @@ export function apply(ctx) {
         event?.type === "tool/call" &&
         event.data?.name === "ask_user_question"
       ) {
-        // Agent is waiting on the user -> bgm play notification 0
+        // Agent is waiting on the user -> bgm play notification 0. Reset
+        // lastWorkTime so the user's immediate reply (a user/message inside
+        // DEBOUNCE_MS) restarts work music instead of being swallowed by the
+        // debounce window.
+        lastWorkTime = 0;
         run("play", "notification", "0");
       }
     },
