@@ -40,6 +40,14 @@ import { spawn } from "node:child_process";
 
 export const name = "__PLUGIN_ID__";
 
+// Cordis service injection: `session/event` callbacks dispatch on the
+// session-scoped carrier, whose fiber chain does NOT resolve `ctx.agents`
+// (agent/status callbacks dispatch on the agent carrier and do). Declaring
+// the dependency binds the service on this plugin's context so both paths
+// can use it — without this, `ctx.agents` throws "cannot get property
+// 'agents' without inject" inside the session/event handler.
+export const inject = ["agents"];
+
 const BGM = __BGM_PATH_JSON__;
 
 export function apply(ctx) {

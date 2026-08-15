@@ -64,6 +64,11 @@ def test_generate_plugin_contains_expected_pieces():
     assert '"user/message"' in plugin
     assert "isRootSession" in plugin
     assert "DEBOUNCE_MS" in plugin
+    # Cordis requires services used inside session/event callbacks to be
+    # declared via inject (session-scoped dispatch cannot resolve ctx.agents
+    # from the fiber chain; without this the user/message branch throws
+    # "cannot get property 'agents' without inject").
+    assert 'export const inject = ["agents"];' in plugin
     assert '"/x/bgm"' in plugin
     # ask_user_question resets the work debounce so the user's immediate
     # reply restarts work music (the reset also appears in session/disposed;
