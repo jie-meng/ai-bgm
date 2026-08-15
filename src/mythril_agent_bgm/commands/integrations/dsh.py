@@ -43,7 +43,13 @@ export const name = "__PLUGIN_ID__";
 const BGM = __BGM_PATH_JSON__;
 
 export function apply(ctx) {
+  // Root agents that are currently running (drives the "done" cue only).
   const runningRoots = new Set();
+
+  // Work music starts on a real user prompt, not on session/agent startup.
+  // Debounce guards against synthetic user/message bursts.
+  const DEBOUNCE_MS = 2000;
+  let lastWorkTime = 0;
 
   const run = (...args) => {
     const child = spawn(BGM, args, {
@@ -57,6 +63,11 @@ export function apply(ctx) {
     child.unref();
   };
 
+  const isRootSession = (session) => {
+    const roots = ctx.agents?.roots?.() ?? [];
+    return roots.some((agent) => agent.session?.id === session?.id);
+  };
+
   ctx.on(
     "agent/status",
     ({ agent, status }) => {
@@ -64,8 +75,6 @@ export function apply(ctx) {
       const roots = ctx.agents?.roots?.() ?? [];
       if (!roots.includes(agent)) return;
       if (status === "running") {
-        // First root agent started -> bgm play work 0
-        if (runningRoots.size === 0) run("play", "work", "0");
         runningRoots.add(agent);
       } else if (status === "idle") {
         runningRoots.delete(agent);
@@ -78,9 +87,20 @@ export function apply(ctx) {
 
   ctx.on(
     "session/event",
-    (_session, event) => {
-      // Agent is waiting on the user -> bgm play notification 0
-      if (event?.type === "tool/call" && event.data?.name === "ask_user_question") {
+    (session, event) => {
+      if (event?.type === "user/message") {
+        // A real user prompt: start (or restart, e.g. after a manual
+        // `bgm stop`) the work loop.
+        const now = Date.now();
+        if (isRootSession(session) && now - lastWorkTime > DEBOUNCE_MS) {
+          lastWorkTime = now;
+          run("play", "work", "0");
+        }
+      } else if (
+        event?.type === "tool/call" &&
+        event.data?.name === "ask_user_question"
+      ) {
+        // Agent is waiting on the user -> bgm play notification 0
         run("play", "notification", "0");
       }
     },
@@ -90,9 +110,10 @@ export function apply(ctx) {
   ctx.on(
     "session/disposed",
     () => {
-      // Forget stale root bookkeeping so the next session's first root
-      // agent start triggers a fresh `bgm play work 0`.
+      // Forget stale bookkeeping so the next session's first user prompt
+      // triggers a fresh `bgm play work 0`.
       runningRoots.clear();
+      lastWorkTime = 0;
       run("stop");
     },
     { global: true }

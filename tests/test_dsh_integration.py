@@ -61,7 +61,24 @@ def test_generate_plugin_contains_four_handlers():
     assert "agent/status" in plugin
     assert "session/event" in plugin
     assert "session/disposed" in plugin
+    assert '"user/message"' in plugin
+    assert "isRootSession" in plugin
+    assert "DEBOUNCE_MS" in plugin
     assert '"/x/bgm"' in plugin
+
+
+def test_generate_plugin_work_triggered_by_user_message_not_agent_status():
+    # Regression guard: work music must start on a real user prompt
+    # (user/message in a root session), NOT on session/agent startup
+    # (agent/status running fires when dsh web resumes a session without
+    # any user input). The single `play work 0` call must live inside the
+    # session/event handler, after the user/message check.
+    plugin = DshIntegration._generate_plugin("/x/bgm")
+    assert plugin.index('"agent/status"') < plugin.index('"user/message"')
+    assert plugin.index('"user/message"') < plugin.index('run("play", "work", "0")')
+    # agent/status handler only does bookkeeping + the done cue, never work.
+    status_block = plugin[plugin.index('"agent/status"') : plugin.index('"session/event"')]
+    assert 'run("play", "work", "0")' not in status_block
 
 
 def test_generate_plugin_swallows_spawn_errors():
