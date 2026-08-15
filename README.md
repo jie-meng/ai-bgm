@@ -58,6 +58,8 @@ bgm stop
 - Cursor Agent
 - Gemini CLI
 - OpenCode (plugin-based)
+- DeepSeek Harness (plugin-based)
+  Note: restart `dsh web` after setup to activate the plugin.
 
 `bgm setup` only configures tools detected on your machine.
 

@@ -11,6 +11,7 @@ from mythril_agent_bgm.commands.integrations.cline import ClineIntegration
 from mythril_agent_bgm.commands.integrations.codebuddy import CodeBuddyIntegration
 from mythril_agent_bgm.commands.integrations.copilot import CopilotIntegration
 from mythril_agent_bgm.commands.integrations.cursor_agent import CursorAgentIntegration
+from mythril_agent_bgm.commands.integrations.dsh import DshIntegration
 from mythril_agent_bgm.commands.integrations.gemini import GeminiIntegration
 from mythril_agent_bgm.commands.integrations.mimo import MimoIntegration
 from mythril_agent_bgm.commands.integrations.opencode import OpenCodeIntegration
@@ -36,6 +37,7 @@ class IntegrationRegistry:
         GeminiIntegration,
         MimoIntegration,
         OpenCodeIntegration,
+        DshIntegration,
     ]
 
     @classmethod

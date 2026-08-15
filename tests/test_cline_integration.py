@@ -13,7 +13,6 @@ from mythril_agent_bgm.commands.integrations.cline import (
 
 
 @pytest.fixture
-
 def fake_home(tmp_path: Path) -> Path:
     """A fake home directory with a .cline config root."""
     cfg = tmp_path / ".cline"
@@ -43,9 +42,7 @@ def test_tool_info():
 
 def test_hooks_dir_is_under_dot_cline_hooks(patched_home):
     with patched_home:
-        assert ClineIntegration().get_settings_path() == (
-            Path.home() / ".cline" / "hooks"
-        )
+        assert ClineIntegration().get_settings_path() == (Path.home() / ".cline" / "hooks")
 
 
 def test_generates_all_hook_events():
@@ -54,6 +51,7 @@ def test_generates_all_hook_events():
         "TaskStart",
         "TaskComplete",
         "SessionShutdown",
+        "PreToolUse",
         "PostToolUse",
     }
     for event in _HOOK_EVENTS:
@@ -77,11 +75,18 @@ def test_session_shutdown_stops():
     assert '"/x/bgm" stop' in script
 
 
-def test_post_tool_use_plays_notification_on_ask_question():
-    script = ClineIntegration._hook_script("PostToolUse", "/x/bgm")
-    assert 'tool_result.name' in script
+def test_pre_tool_use_plays_notification_on_ask_question():
+    script = ClineIntegration._hook_script("PreToolUse", "/x/bgm")
+    assert "tool_call.name" in script
     assert '"ask_question"' in script
     assert '"/x/bgm" play notification 0' in script
+
+
+def test_post_tool_use_resumes_work_after_ask_question():
+    script = ClineIntegration._hook_script("PostToolUse", "/x/bgm")
+    assert "tool_result.name" in script
+    assert '"ask_question"' in script
+    assert '"/x/bgm" play work 0' in script
 
 
 def test_unknown_event_raises():
