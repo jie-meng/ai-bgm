@@ -55,6 +55,11 @@ def test_generate_plugin_contains_expected_pieces():
     plugin = DshIntegration._generate_plugin("/x/bgm")
     assert "play work 0" in plugin
     assert "play done" in plugin
+    # The user's answer to a question arrives as tool/result, not
+    # user/message: its callId must resume work music (notification does not
+    # loop until the next prompt).
+    assert "pendingQuestions" in plugin
+    assert "event.data?.message?.source?.callId" in plugin
     assert "play notification 0" in plugin
     assert "stop" in plugin
     assert "ask_user_question" in plugin

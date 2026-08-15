@@ -54,6 +54,10 @@ export function apply(ctx) {
   // Root agents that are currently running (drives the "done" cue only).
   const runningRoots = new Set();
 
+  // Call ids of ask_user_question tools still awaiting the user's answer;
+  // their tool/result resumes work music (the answer is not a user/message).
+  const pendingQuestions = new Set();
+
   // Work music starts on a real user prompt, not on session/agent startup.
   // Debounce guards against synthetic user/message bursts.
   const DEBOUNCE_MS = 2000;
@@ -115,8 +119,19 @@ export function apply(ctx) {
         // lastWorkTime so the user's immediate reply (a user/message inside
         // DEBOUNCE_MS) restarts work music instead of being swallowed by the
         // debounce window.
+        pendingQuestions.add(event.data.callId);
         lastWorkTime = 0;
         run("play", "notification", "0");
+      } else if (event?.type === "tool/result") {
+        // The user's answer to a question arrives as a tool/result, not a
+        // user/message: resume work music so the notification does not loop
+        // until the next prompt.
+        const callId = event.data?.message?.source?.callId;
+        if (callId !== void 0 && pendingQuestions.delete(callId)) {
+          const now = Date.now();
+          lastWorkTime = now;
+          run("play", "work", "0");
+        }
       }
     },
     { global: true }
@@ -128,6 +143,7 @@ export function apply(ctx) {
       // Forget stale bookkeeping so the next session's first user prompt
       // triggers a fresh `bgm play work 0`.
       runningRoots.clear();
+      pendingQuestions.clear();
       lastWorkTime = 0;
       run("stop");
     },
