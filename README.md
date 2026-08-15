@@ -60,6 +60,8 @@ bgm stop
 - OpenCode (plugin-based)
 - DeepSeek Harness (plugin-based)
   Note: restart `dsh web` after setup to activate the plugin.
+- Pi Coding Agent (extension-based)
+  Note: run `/reload` in pi (or restart pi) after setup to activate the extension.
 
 `bgm setup` only configures tools detected on your machine.
 

@@ -59,6 +59,8 @@ bgm stop
 - OpenCode（基于插件）
 - DeepSeek Harness（基于插件）
   提示：安装后请重启 `dsh web` 以启用插件。
+- Pi Coding Agent（基于扩展）
+  提示：安装后请在 pi 内运行 `/reload`（或重启 pi）以启用扩展。
 
 `bgm setup` 只会配置当前机器上已检测到的工具。
 

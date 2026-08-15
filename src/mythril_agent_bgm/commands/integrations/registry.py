@@ -15,6 +15,7 @@ from mythril_agent_bgm.commands.integrations.dsh import DshIntegration
 from mythril_agent_bgm.commands.integrations.gemini import GeminiIntegration
 from mythril_agent_bgm.commands.integrations.mimo import MimoIntegration
 from mythril_agent_bgm.commands.integrations.opencode import OpenCodeIntegration
+from mythril_agent_bgm.commands.integrations.pi import PiIntegration
 
 
 class IntegrationRegistry:
@@ -38,6 +39,7 @@ class IntegrationRegistry:
         MimoIntegration,
         OpenCodeIntegration,
         DshIntegration,
+        PiIntegration,
     ]
 
     @classmethod
