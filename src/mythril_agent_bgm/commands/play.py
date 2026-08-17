@@ -20,6 +20,9 @@ from mythril_agent_bgm.utils.common import (
     load_builtin_config,
     save_pid,
     cleanup_pid,
+    save_state,
+    clear_state,
+    load_state,
     is_bgm_enabled,
     get_audio_candidate_paths,
     resolve_audio_file_path,
@@ -138,6 +141,10 @@ def play_music(selection: str, music_type: str, repeat: int = 1) -> None:
         # Load the music file
         pygame.mixer.music.load(str(full_path))
 
+        # Record what is playing so an idempotent `bgm play` can keep the
+        # current track running instead of restarting it.
+        save_state(music_type)
+
         # Play the music
         if repeat == 0:
             # Infinite loop: 0 means loop forever
@@ -184,9 +191,11 @@ def play_music(selection: str, music_type: str, repeat: int = 1) -> None:
                     saved_pid = int(f.read().strip())
                 if saved_pid == current_pid:
                     cleanup_pid()
+                    clear_state()
         except Exception:
             # Fallback: just cleanup
             cleanup_pid()
+            clear_state()
 
 
 def wait_for_daemon_pid(previous_pid: Optional[int], timeout: float = 5.0) -> None:
@@ -214,14 +223,47 @@ def wait_for_daemon_pid(previous_pid: Optional[int], timeout: float = 5.0) -> No
         time.sleep(0.1)
 
 
+def is_music_type_playing(music_type: str) -> bool:
+    """
+    Check if a live player daemon is currently playing the given music type.
+
+    Args:
+        music_type: Either 'work', 'done', or 'notification'
+
+    Returns:
+        True if a live daemon is playing that music type, False otherwise.
+    """
+    if load_state() != music_type:
+        return False
+
+    pid_file = get_pid_file()
+    if not pid_file.exists():
+        return False
+
+    try:
+        pid = int(pid_file.read_text().strip())
+    except (ValueError, OSError):
+        return False
+
+    return ProcessManager.check_process_exists(pid)
+
+
 def start_background_player(music_type: str, loop: int) -> None:
     """
     Start the BGM player in the background as a daemon process.
+
+    Idempotent: if a live daemon is already playing the same music type,
+    this is a no-op (the current track keeps playing uninterrupted).
 
     Args:
         music_type: Either 'work', 'done', or 'notification'
         loop: Number of times to play. 0 for infinite loop, 1+ for specified count.
     """
+    # No-op when the requested music is already playing, so hooks on
+    # frequent events (e.g. PostToolUse) don't restart the track.
+    if is_music_type_playing(music_type):
+        return
+
     lock_file = get_lock_file()
 
     # Use file lock to prevent concurrent start
@@ -311,6 +353,7 @@ def run_player_daemon(music_type: str, loop: int) -> None:
                     saved_pid = int(f.read().strip())
                 if saved_pid == current_pid:
                     cleanup_pid()
+                    clear_state()
                 else:
                     print(
                         f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] PID file belongs to newer process ({saved_pid}), not cleaning up"

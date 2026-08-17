@@ -163,6 +163,35 @@ def get_pid_file() -> Path:
     return get_config_dir() / "bgm_player.pid"
 
 
+def get_state_file() -> Path:
+    """Get the path to the state file (currently playing music type)."""
+    return get_config_dir() / "bgm_player.state"
+
+
+def save_state(music_type: str) -> None:
+    """Save the currently playing music type to the state file."""
+    with open(get_state_file(), "w", encoding="utf-8") as f:
+        f.write(music_type)
+
+
+def load_state() -> str:
+    """Load the currently playing music type, or empty string if none."""
+    state_file = get_state_file()
+    if not state_file.exists():
+        return ""
+    try:
+        return state_file.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def clear_state() -> None:
+    """Remove the state file."""
+    state_file = get_state_file()
+    if state_file.exists():
+        state_file.unlink()
+
+
 def get_lock_file() -> Path:
     """Get the path to the lock file for preventing concurrent starts."""
     return get_config_dir() / "bgm_player.lock"

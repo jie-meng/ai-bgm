@@ -36,6 +36,11 @@ class CodeBuddyIntegration(AIToolIntegration):
         - Stop: Play done music
         - SessionEnd: Stop all music
         - Notification: Play notification music (only on permission_prompt, not idle_prompt)
+        - PostToolUse/ElicitationResult/PermissionDenied: Switch back to work
+          music. These fire after the user answers a permission prompt or
+          question dialog. ``bgm play work 0`` is idempotent (a no-op while
+          work music is already playing), so hooking it on frequent events
+          like PostToolUse never restarts the current track.
 
         Args:
             settings: Existing settings dictionary
@@ -53,6 +58,9 @@ class CodeBuddyIntegration(AIToolIntegration):
                     "hooks": [{"type": "command", "command": "bgm play notification 0"}],
                 }
             ],
+            "PostToolUse": [{"hooks": [{"type": "command", "command": "bgm play work 0"}]}],
+            "ElicitationResult": [{"hooks": [{"type": "command", "command": "bgm play work 0"}]}],
+            "PermissionDenied": [{"hooks": [{"type": "command", "command": "bgm play work 0"}]}],
         }
 
         # Initialize hooks if it doesn't exist
@@ -60,17 +68,23 @@ class CodeBuddyIntegration(AIToolIntegration):
             settings["hooks"] = {}
 
         # Update hooks, keep other hooks intact
-        settings["hooks"]["UserPromptSubmit"] = hooks_config["UserPromptSubmit"]
-        settings["hooks"]["Stop"] = hooks_config["Stop"]
-        settings["hooks"]["SessionEnd"] = hooks_config["SessionEnd"]
-        settings["hooks"]["Notification"] = hooks_config["Notification"]
+        for key, value in hooks_config.items():
+            settings["hooks"][key] = value
 
         return settings
 
     def cleanup_hooks(self, settings: dict) -> dict:
         """Remove BGM hooks from CodeBuddy Code settings."""
         hooks = settings.get("hooks", {})
-        for key in ("UserPromptSubmit", "Stop", "SessionEnd", "Notification"):
+        for key in (
+            "UserPromptSubmit",
+            "Stop",
+            "SessionEnd",
+            "Notification",
+            "PostToolUse",
+            "ElicitationResult",
+            "PermissionDenied",
+        ):
             hooks.pop(key, None)
         if not hooks:
             settings.pop("hooks", None)

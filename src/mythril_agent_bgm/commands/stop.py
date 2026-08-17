@@ -8,7 +8,11 @@ from pathlib import Path
 
 import click
 
-from mythril_agent_bgm.utils.common import get_pid_file, get_lock_file
+from mythril_agent_bgm.utils.common import (
+    get_pid_file,
+    get_lock_file,
+    clear_state,
+)
 from mythril_agent_bgm.utils.process import ProcessManager, FileLock
 from mythril_agent_bgm.utils.platform_utils import is_unix
 
@@ -33,6 +37,7 @@ def kill_existing_player() -> bool:
                     pid_file.unlink()
                 except (FileNotFoundError, PermissionError):
                     pass
+            clear_state()
             return True
 
     # Fallback: Use PID file method (works on all platforms)
@@ -56,6 +61,8 @@ def kill_existing_player() -> bool:
             pid_file.unlink()
         except (FileNotFoundError, PermissionError):
             pass
+
+    clear_state()
 
     return killed_any
 
