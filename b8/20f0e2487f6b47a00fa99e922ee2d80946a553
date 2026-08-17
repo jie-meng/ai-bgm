@@ -1,0 +1,42 @@
+src/mythril_agent_bgm/commands/stop.py
+  s_fb56d69bf3f511::t_0b3cf65a4af5ab 11-15
+  s_fb56d69bf3f511::t_73021af44e00de 40
+  s_fb56d69bf3f511::t_5cde5374b58adf 65-66
+src/mythril_agent_bgm/utils/common.py
+  s_fb56d69bf3f511::t_e25786f31a3059 166-194
+tests/test_codebuddy_integration.py
+  s_fb56d69bf3f511::t_b16df977296b46 84,114,141
+  s_fb56d69bf3f511::t_e75680f78c32d5 1-64,67-68,70-83,85-113,115-140
+  s_fb56d69bf3f511::t_743c443bcf4274 65-66,69
+src/mythril_agent_bgm/commands/play.py
+  s_fb56d69bf3f511::t_29da64ed26787c 144-145
+  s_fb56d69bf3f511::t_1bce3e713e7326 226-250,255-257,262-266
+  s_fb56d69bf3f511::t_db1961ccd66972 146-147
+  s_fb56d69bf3f511::t_44720fc4de0dde 194,198
+  s_fb56d69bf3f511::t_97692dd106ed93 23-24
+  s_fb56d69bf3f511::t_e9485677a3e514 25
+  s_fb56d69bf3f511::t_72976cc6056eb7 356
+src/mythril_agent_bgm/commands/integrations/codebuddy.py
+  s_fb56d69bf3f511::t_56c8f7b2b656af 71-72,79-87
+  s_fb56d69bf3f511::t_e81c50761514c3 39-43,61-63
+tests/test_play_state.py
+  s_fb56d69bf3f511::t_69ccb5e6efdc43 1-19,21-26,42-103
+  s_fb56d69bf3f511::t_bcef2b7c245d56 20,28-41,104
+  s_fb56d69bf3f511::t_fd9c1ef2e51e99 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b820f0e2487f6b47a00fa99e922ee2d80946a553",
+  "prompts": {},
+  "sessions": {
+    "s_fb56d69bf3f511": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ff12e24b7ffeLAiBVBeLjHQV0w",
+        "model": "deepseek-v4-flash-0731"
+      },
+      "human_author": "Jie Meng <jmengxy@gmail.com>"
+    }
+  }
+}
